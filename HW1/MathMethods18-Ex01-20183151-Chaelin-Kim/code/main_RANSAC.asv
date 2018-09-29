@@ -18,9 +18,10 @@ for itr = 1:size(outlierRatio, 2)
 end
 
 % Execute exhaustive search
-for itr = 1:size(outlierRatio, 2)
-    doExhaustiveSearch(data{itr}, 3, inlierThreshold);
-end
+% for itr = 1:size(outlierRatio, 2)
+%     doExhaustiveSearch(data{itr}, 3);
+% end
+test = nchoosek(size(data{1},2),3);
     
 % Execute RANSAC function
 for itr = 1:size(outlierRatio, 2)
