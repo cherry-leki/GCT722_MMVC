@@ -4,7 +4,8 @@ clear all
 n = 100;
 center = [0,0];
 radius = 5;
-outlierRatio = 0.05;
+
+outlierRatio = 0.7;
 inlierThreshold = 0.1;
 
 %% compute the number of outlier and inlier
