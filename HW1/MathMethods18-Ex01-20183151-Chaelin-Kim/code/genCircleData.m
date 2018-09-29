@@ -1,10 +1,11 @@
 function [ data ] = genCircleData(  n, center, radius, inlierThreshold, outlierRatio )
 
+outlierNum = outlierRatio * 100;
+inlierNum = n - outlierNum;
+
 rng('shuffle', 'twister');
 
 %% make inlier data
-outlierNum = outlierRatio * 100;
-inlierNum = n - outlierNum;
 angle = 2 * pi * rand(inlierNum, 1);
 
 noise_x = -inlierThreshold + (2 * inlierThreshold) * rand(inlierNum, 1);

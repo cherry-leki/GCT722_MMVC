@@ -19,7 +19,7 @@ end
     
 % execute RANSAC function
 for itr = 1:size(outlierRatio, 2)
-    [ransacResult{itr},histResult{itr}] = doRANSAC(data{itr}, inlierThreshold, outlierRatio(itr));
+    [ransacResult{itr}, histResult{itr}] = doRANSAC(data{itr}, inlierThreshold, outlierRatio(itr));
 end
 
 % Draw RANSACplots

@@ -1,10 +1,14 @@
 function [ ] = drawRANSACPlot( center, radius, data, ransacResult, histResult, outlierRatio )
 f = figure('Position',[0 0 1280 900]);
 p = uipanel('Parent', f, 'BorderType', 'none');
+set(p, 'Title', 'RANSAC FOR CIRCLE FITTING');
+set(p, 'TitlePosition', 'centertop');
+set(p, 'FontWeight', 'bold', 'FontSize', 14);
 for itr=1:size(outlierRatio,2)
     % histogram plot
     subplot(2,4,itr,'Parent', p);
     hist(histResult{itr}, 0:100);
+    title("Outlier Ratio: " + outlierRatio(itr));
     xlabel('Nb of detected inliers')
     ylabel('Nb of experiments')
     xlim([1, 100]);

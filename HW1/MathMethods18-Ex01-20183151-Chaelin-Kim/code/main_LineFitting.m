@@ -2,25 +2,36 @@ clear all
 
 %% Initial settings
 n = 100;
-center = [0, 0];
-radius = 5;
+a = 5 / 6;
+b = 0.1;
 inlierThreshold = 0.1;
-outlierRatio = [0.05, 0.2, 0.3, 0.7];
+outlierRatio = [0, 0.1];
 
 data = [];
-ransacResult = [];
-histResult = [];
+result_IRLS = [];
+result_L1 = [];
+result_Linf = [];
 
-%% RANSAC
+%% IRLS AND NORMS FOR LINE FITTING
 % Generate synthesized data
-for itr = 1:size(outlierRatio, 2)
-    data{itr} = genCircleData(n, center, radius, inlierThreshold, outlierRatio(itr));
+for itr=1:size(outlierRatio,2)
+    data{itr} = genLineData(n, a, b, inlierThreshold, outlierRatio(itr));
 end
     
-% execute RANSAC function
-for itr = 1:size(outlierRatio, 2)
-    [ransacResult{itr},histResult{itr}] = doRANSAC(data{itr}, inlierThreshold, outlierRatio(itr));
+% Norm 1 with IRLS
+for itr=1:size(outlierRatio,2)
+    result_IRLS{itr} = doIRLS(n, data{itr});
 end
 
-% Draw RANSACplots
-drawRANSACPlot(center, radius, data, ransacResult, histResult, outlierRatio);
+% Norm 1 with LP
+for itr=1:size(outlierRatio,2)
+    result_L1{itr} = doLP(data{itr}, "L1");
+end
+
+% Norm infinity with LP
+for itr=1:size(outlierRatio,2)
+    result_Linf{itr} = doLP(data{itr}, "Linf");
+end
+
+% Draw Line Fitting plots
+drawLineFittingPlot(a, b, data, {result_IRLS, result_L1, result_Linf}, outlierRatio);

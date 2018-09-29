@@ -38,14 +38,6 @@ end
 
 data = [[x_data_i', x_data_o]; [y_data_i', y_data_o]];
 
-%% Norm 1 with LP
-L1_f = [[0, 0]'; ones(size(data(1,:)))'];
-L1_A = [data(1,:)', ones(size(data(1,:)))', -eye(size(data(1,:),2)); ...
-        -data(1,:)', -ones(size(data(1,:)))', -eye(size(data(1,:),2))];
-L1_b = [data(2,:), -data(2,:)];
-
-result_L1 = linprog(L1_f', L1_A, L1_b');
-
 %% Norm 1 with IRLS
 compare = [];
 % Initial weight: w = 1
@@ -72,6 +64,14 @@ for itr=1:n
     weight = 1./max(0.0001, abs(data(2,:) - (data(1,:).*grad_a + grad_b)));
     compare = [compare; grad_a, grad_b];
 end
+
+%% Norm 1 with LP
+L1_f = [[0, 0]'; ones(size(data(1,:)))'];
+L1_A = [data(1,:)', ones(size(data(1,:)))', -eye(size(data(1,:),2)); ...
+        -data(1,:)', -ones(size(data(1,:)))', -eye(size(data(1,:),2))];
+L1_b = [data(2,:), -data(2,:)];
+
+result_L1 = linprog(L1_f', L1_A, L1_b');
 
 %% Norm infinity with LP
 Linf_f = [0 0 1];
