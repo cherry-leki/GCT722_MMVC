@@ -11,16 +11,16 @@ data = [];
 ransacResult = [];
 histResult = [];
 
-%% Generate synthesized data
+%% RANSAC
+% Generate synthesized data
 for itr = 1:size(outlierRatio, 2)
     data{itr} = genCircleData(n, center, radius, inlierThreshold, outlierRatio(itr));
 end
     
-%% Do RANSAC
+% execute RANSAC function
 for itr = 1:size(outlierRatio, 2)
     [ransacResult{itr},histResult{itr}] = doRANSAC(data{itr}, inlierThreshold, outlierRatio(itr));
 end
 
-
-%% Draw plots
+% Draw RANSACplots
 drawRANSACPlot(center, radius, data, ransacResult, histResult, outlierRatio);
