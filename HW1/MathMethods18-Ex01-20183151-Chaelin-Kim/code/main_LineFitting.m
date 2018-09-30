@@ -1,9 +1,9 @@
 clear all
 
 %% Initial settings
-n = 100;
-a = 5 / 6;
-b = 0.1;
+n = 100;            % Number of data points
+a = 5 / 6;          % Gradient value for the synthesized line
+b = 0.1;            % Bias value for the synthesized line
 inlierThreshold = 0.1;
 outlierRatio = [0, 0.1];
 
@@ -18,17 +18,17 @@ for itr=1:size(outlierRatio,2)
     data{itr} = genLineData(n, a, b, inlierThreshold, outlierRatio(itr));
 end
     
-% Norm 1 with IRLS
+% L1 Norm with IRLS
 for itr=1:size(outlierRatio,2)
-    result_IRLS{itr} = doIRLS(n, data{itr});
+    result_IRLS{itr} = doIRLS(data{itr});
 end
 
-% Norm 1 with LP
+% L1 Norm with LP
 for itr=1:size(outlierRatio,2)
     result_L1{itr} = doLP(data{itr}, "L1");
 end
 
-% Norm infinity with LP
+% L infinity Norm with LP
 for itr=1:size(outlierRatio,2)
     result_Linf{itr} = doLP(data{itr}, "Linf");
 end
