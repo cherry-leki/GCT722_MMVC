@@ -12,23 +12,23 @@ for itr=1:size(combination,1)
     % Calculate the circle including upper 3 points
     % ref: http://egloos.zum.com/heilow/v/418569
     % Gradient
-    d1 = (selectPoint_x(2)-selectPoint_x(1)) / (selectPoint_y(2)-selectPoint_y(1));
-    d2 = (selectPoint_x(3)-selectPoint_x(2)) / (selectPoint_y(3)-selectPoint_y(2));
+    grad1 = (selectPoint_x(2)-selectPoint_x(1)) / (selectPoint_y(2)-selectPoint_y(1));
+    grad2 = (selectPoint_x(3)-selectPoint_x(2)) / (selectPoint_y(3)-selectPoint_y(2));
     % Center of the circle
-    cx = ((selectPoint_y(3)-selectPoint_y(1)) + (selectPoint_x(2) + selectPoint_x(3)) * d2 - (selectPoint_x(1) + selectPoint_x(2)) * d1) / (2 * (d2 - d1));
-    cy = -d1 * (cx - (selectPoint_x(1) + selectPoint_x(2)) / 2) + (selectPoint_y(1) + selectPoint_y(2)) / 2;
+    center_X = ((selectPoint_y(3)-selectPoint_y(1)) + (selectPoint_x(2) + selectPoint_x(3)) * grad2 - (selectPoint_x(1) + selectPoint_x(2)) * grad1) / (2 * (grad2 - grad1));
+    center_Y = -grad1 * (center_X - (selectPoint_x(1) + selectPoint_x(2)) / 2) + (selectPoint_y(1) + selectPoint_y(2)) / 2;
     % Radius of the circle
-    r = sqrt((selectPoint_x(1) - cx)^2 + (selectPoint_y(1) - cy)^2);
+    radius = sqrt((selectPoint_x(1) - center_X)^2 + (selectPoint_y(1) - center_Y)^2);
 
     % Caculate error
-    inlierCount = ((data(1,:)-cx).^2 + (data(2,:)-cy).^2 >= (r - inlierThreshold)^2) & ...
-        ((data(1,:)-cx).^2 + (data(2,:)-cy).^2 <= (r + inlierThreshold)^2);
+    inlierCount = ((data(1,:)-center_X).^2 + (data(2,:)-center_Y).^2 >= (radius - inlierThreshold)^2) & ...
+        ((data(1,:)-center_X).^2 + (data(2,:)-center_Y).^2 <= (radius + inlierThreshold)^2);
     numOfInlier = nnz(inlierCount);     % The number of Inliers
 
     % Set the best result
     if numOfInlier > maxInlier
         maxInlier = numOfInlier;
-        bestModel = [cx, cy, r];
+        bestModel = [center_X, center_Y, radius];
     end
 end
 
