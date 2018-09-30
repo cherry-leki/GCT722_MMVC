@@ -15,9 +15,9 @@ for itr=1:size(outlierRatio,2)
     % Synthesized line
     plot(x, a * x + b, 'Color', 'g', 'LineWidth', 2);
     % L1 with IRLS
-    plot(x, result{1}{itr}(1) * x + result{1}{itr}(2), 'Color', 'black');
+    plot(x, result{1}{itr}(1) * x + result{1}{itr}(2), 'Color', 'red');
     % L1 with LP
-    plot(x, result{2}{itr}(1) * x + result{2}{itr}(2), 'Color', 'black');
+    plot(x, result{2}{itr}(1) * x + result{2}{itr}(2), 'Color', 'blue');
     % L infinity with LP
     plot(x, result{3}{itr}(1) * x + result{3}{itr}(2), 'Color', 'black');
     lh = legend('data points', 'synth.model', 'L1 with IRLS', 'L1 with LP', 'Linf with LP');

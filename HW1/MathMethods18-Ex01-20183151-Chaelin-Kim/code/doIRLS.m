@@ -1,11 +1,12 @@
 function [ result_IRLS ] = doIRLS( n, data )
 %% Norm 1 with IRLS
-compare = [];
+compare = ones(1,2);
 % Initial weight: w = 1
 weight = ones([1, 100]);
 result_sum = Inf(1);
+threshold = 1;
 
-for itr=1:n
+while threshold > 0.0001
     % ¡ÓR/¡Óa = -2 * Sum(wi(yi-(axi + b))xi = 0
     % ¡ÓR/¡Ób = -2 * Sum(wi(yi-(axi + b)) = 0
     sumW = sum(weight);
@@ -23,6 +24,7 @@ for itr=1:n
     end
     
     weight = 1./max(0.0001, abs(data(2,:) - (data(1,:).*grad_a + grad_b)));
+    threshold = abs(([compare(end,1), compare(end,2)]-[grad_a, grad_b]));
     compare = [compare; grad_a, grad_b];
 end
 end
