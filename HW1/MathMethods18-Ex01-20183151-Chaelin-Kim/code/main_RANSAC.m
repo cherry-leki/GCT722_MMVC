@@ -19,7 +19,7 @@ end
 
 % Execute exhaustive search
 for itr = 1:size(outlierRatio, 2)
-    doExhaustiveSearch(data{itr}, 3, inlierThreshold);
+    doExhaustiveSearch(data{itr}, 3, inlierThreshold, outlierRatio(itr));
 end
     
 % Execute RANSAC function

@@ -1,4 +1,4 @@
-function [ bestModel, maxInlier ] = doExhaustiveSearch( data, k, inlierThreshold)
+function [ bestModel, maxInlier ] = doExhaustiveSearch( data, k, inlierThreshold, outlierRatio)
 
 n = 1:1:size(data,2);
 combination = nchoosek(n,k);
@@ -34,10 +34,10 @@ for itr=1:size(combination,1)
     end
 end
 
-disp("-----------------");
+disp("+------------- Outlier Ratio " + outlierRatio + " -------------+");
 disp("Number of iteration: " + size(combination,1));
 disp("Number of max Inlier: " + maxInlier);
-disp("Model(x, y, r): " + bestModel); 
-disp("-----------------");
+disp("Model(x, y, r): " + bestModel(1) + "," + bestModel(2) + "," + bestModel(3)); 
+disp("-----------------------------------------------");
 end
 
