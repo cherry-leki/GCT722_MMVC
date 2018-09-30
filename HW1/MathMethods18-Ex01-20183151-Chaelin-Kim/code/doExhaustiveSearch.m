@@ -5,6 +5,8 @@ combination = nchoosek(n,k);        % The number of combinations of the elements
 bestModel = [];                     % The result of exhaustive searching
 maxInlier = 0;                      % The result of the number of inliers
 
+disp("Number of iteration: " + size(combination,1));
+
 for itr=1:size(combination,1)
     % Select 3 points according to combination
     selectPoint_x = data(1, combination(itr,1:3));

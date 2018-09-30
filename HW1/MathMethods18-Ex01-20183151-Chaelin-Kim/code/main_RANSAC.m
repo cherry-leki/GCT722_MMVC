@@ -1,7 +1,7 @@
 clear all
 
 %% Initial settings
-n = 10000;                % Number of data points
+n = 100;                % Number of data points
 center = [0, 0];        % Center value for the synthesized circle
 radius = 5;             % Radius value for the synthesized circle
 inlierThreshold = 0.1;
