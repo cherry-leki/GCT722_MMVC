@@ -1,13 +1,17 @@
-function [bestModel, detectedInliers] = doRANSAC(data, inlierThreshold, outlierRatio)
-M = 1000;
-N = log(1-0.99) / log(1 - (1 - outlierRatio)^3);
-bestModel = [];
-maxInlier = 0;
-detectedInliers = zeros(1, 1000);
+function [bestModel, detectedInliers] = doRANSAC(data, M, inlierThreshold, outlierRatio)
 
+% Compute the number of RANSAC iteration
+N = log(1-0.99) / log(1 - (1 - outlierRatio)^3);
+
+bestModel = [];                     % The result of exhaustive searching 
+maxInlier = 0;                      % The result of the number of inliers
+detectedInliers = zeros(1, 1000);   % The result matrix of the number of inliers for histogram
+
+% Iteration for re-apply RANSAC 
 for itr=1:M
     itrModel = [];
     itrInlier = 0;
+    % RANSAC iteration
     for itr2=1:N
         % Select Random 3 points
         randomNum = floor(100 * rand(3, 1)) + 1;
