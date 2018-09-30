@@ -16,16 +16,16 @@ histResult = [];
 for itr = 1:size(outlierRatio, 2)
     data{itr} = genCircleData(n, center, radius, inlierThreshold, outlierRatio(itr));
 end
+    
+% Execute RANSAC
+for itr = 1:size(outlierRatio, 2)
+    [ransacResult{itr}, histResult{itr}] = doRANSAC(data{itr}, inlierThreshold, outlierRatio(itr));
+end
 
 % Execute exhaustive search
 for itr = 1:size(outlierRatio, 2)
     % The result is shown on the output window
     doExhaustiveSearch(data{itr}, 3, inlierThreshold, outlierRatio(itr));
-end
-    
-% Execute RANSAC function
-for itr = 1:size(outlierRatio, 2)
-    [ransacResult{itr}, histResult{itr}] = doRANSAC(data{itr}, inlierThreshold, outlierRatio(itr));
 end
 
 % Draw RANSACplots

@@ -1,5 +1,6 @@
 function [ data ] = genCircleData(  n, center, radius, inlierThreshold, outlierRatio )
 
+% Caculate the number of inliers and outliers
 outlierNum = outlierRatio * 100;
 inlierNum = n - outlierNum;
 
@@ -21,8 +22,8 @@ x_data_o = [];
 y_data_o = [];
 
 while oDataNum < outlierNum
-    temp_x = -10 + 20 * rand;
-    temp_y = -10 + 20 * rand;
+    temp_x = -(radius*2) + (2 * (radius*2)) * rand;
+    temp_y = -(radius*2) + (2 * (radius*2)) * rand;
     if ((center(1)-temp_x)^2 + (center(2)-temp_y)^2 >= (radius - inlierThreshold)^2) && ...
             ((center(1)-temp_x)^2 + (center(2)-temp_y)^2 <= (radius + inlierThreshold)^2)
         continue;
