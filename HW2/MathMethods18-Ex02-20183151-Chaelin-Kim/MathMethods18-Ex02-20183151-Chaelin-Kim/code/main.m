@@ -11,22 +11,24 @@ targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
             [160, 266]; [147, 369]; [272, 369]];
 
 [X, Y] = meshgrid(1:columns, 1:rows);
+v = reshape([X Y], [], 2);
 
 weight_alpha = 1;
 
 %% Affine Transformation
 % Calculate weight
+% Method1
 weight = zeros(rows, columns, size(sourceCP, 1));
 for itr=1:size(sourceCP, 1)
-%     temp_x = sourceCP(itr, 1) - X;
-%     temp_y = sourceCP(itr, 2) - Y;
-%     weight(:,:,itr, 1) = 1./ sqrt(temp_x.^2 + temp_y.^2).^(2 * weight_alpha);
-    v = reshape([X Y], [], 2);
-    weightNorm = zeros(size(v));
-    for itr2=1:size(v, 1)
-        weightNorm(itr2) = 1./ norm(sourceCP(itr,:) - v(itr2, :), 2 * weight_alpha);
-    end
-    weight(:,:,itr) = reshape(weightNorm(:,1), [rows, columns, 1]);
+    temp_x = sourceCP(itr, 1) - X;
+    temp_y = sourceCP(itr, 2) - Y;
+    weight(:,:,itr, 1) = 1./ sqrt(temp_x.^2 + temp_y.^2).^(2 * weight_alpha);
+%     v = reshape([X Y], [], 2);
+%     weightNorm = zeros(size(v));
+%     for itr2=1:size(v, 1)
+%         weightNorm(itr2) = 1./ norm(sourceCP(itr,:) - v(itr2, :), 2 * weight_alpha);
+%     end
+%     weight(:,:,itr) = reshape(weightNorm(:,1), [rows, columns, 1]);
 end
 
 % Calculate p_star & q_star
@@ -41,7 +43,7 @@ end
 
 weightpSum = {sum(weightp{1}, 3), sum(weightp{2}, 3)};
 
-p_star = {weightpSum{1}./weightSum, weightpSum{2}./weightSum};
+pstar = {weightpSum{1}./weightSum, weightpSum{2}./weightSum};
  
 % q_star
 weightq = {zeros(rows, columns, size(targetCP, 1)), zeros(rows, columns, size(targetCP, 1))};
@@ -52,27 +54,44 @@ end
 
 weightqSum = {sum(weightq{1}, 3), sum(weightq{2}, 3)};
 
-q_star = {weightqSum{1}./weightSum, weightqSum{2}./weightSum};
+qstar = {weightqSum{1}./weightSum, weightqSum{2}./weightSum};
 
 % p_hat
-p_hat = {zeros(rows, columns, size(sourceCP, 1)), zeros(rows, columns, size(sourceCP, 1))};
+phat = {zeros(rows, columns, size(sourceCP, 1)), zeros(rows, columns, size(sourceCP, 1))};
 for itr=1:size(sourceCP, 1)
-    p_hat{1}(:,:,itr) = sourceCP(itr, 1) - p_star{1};
-    p_hat{2}(:,:,itr) = sourceCP(itr, 1) - p_star{2};
+    phat{1}(:,:,itr) = sourceCP(itr, 1) - pstar{1};
+    phat{2}(:,:,itr) = sourceCP(itr, 1) - pstar{2};
 end
 
 % q_hat
-q_hat = {zeros(rows, columns, size(targetCP, 1)), zeros(rows, columns, size(targetCP, 1))};
+qhat = {zeros(rows, columns, size(targetCP, 1)), zeros(rows, columns, size(targetCP, 1))};
 for itr=1:size(targetCP, 1)
-    q_hat{1}(:,:,itr) = targetCP(itr, 1) - q_star{1};
-    q_hat{2}(:,:,itr) = targetCP(itr, 1) - q_star{2};
+    qhat{1}(:,:,itr) = targetCP(itr, 1) - qstar{1};
+    qhat{2}(:,:,itr) = targetCP(itr, 1) - qstar{2};
 end
 
 % Precompute fa(v) -> compute Aj
 % phat^T * w * phat
-% Though this solution requires the inversion of a matrix, the matrix is a contant size (2X2)
-invMat = zeros(2, 2);
+% Though this solution requires the inversion of a matrix, the matrix is a contant size (2 X 2)
+phatTWphat = zeros(2, 2, rows, columns, size(sourceCP, 1));
+for itr=1:size(sourceCP, 1)
+    phatTw = {phat{1}(:,:,itr).*weight(:,:,itr), phat{2}(:,:,itr).*weight(:,:,itr)};
+    phatTWphat_11 = phatTw{1}.*phat{1}(:,:,itr);         % xx
+    phatTWphat_12 = phatTw{1}.*phat{2}(:,:,itr);         % xy
+    phatTWphat_21 = phatTw{2}.*phat{1}(:,:,itr);         % yx
+    phatTWphat_22 = phatTw{2}.*phat{2}(:,:,itr);         % yy
+    
+    phatTWphat(1, 1, :, :, itr) = phatTWphat_11;
+    phatTWphat(1, 2, :, :, itr) = phatTWphat_12;
+    phatTWphat(2, 1, :, :, itr) = phatTWphat_21;
+    phatTWphat(2, 2, :, :, itr) = phatTWphat_22;
+end
 
+phatTWphatSum = sum(phatTWphat, 5);
+invphatTWphatSum = inv(phatTWphatSum(:,:));
+vSubpstar = {X - pstar{1}, Y - pstar{2}};
+
+M = 0;
 % Aj is a single scalar
 
 
