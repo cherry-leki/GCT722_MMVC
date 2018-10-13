@@ -30,22 +30,46 @@ weight(weight==inf) = 1;
 weightSum = sum(weight,2);
 
 % p_star
-pstar = calStar(weight, vLength, sourceCP);
+wp = zeros(vLength, 2, size(sourceCP, 1));
+for itr=1:size(sourceCP,1)
+    wp(:,1,itr) = weight(:,itr).*sourceCP(itr, 1);
+    wp(:,2,itr) = weight(:,itr).*sourceCP(itr, 2);
+end
 
-% p_hat
-phat = calHat(vLength, sourceCP, pstar);
+wpSum = sum(wp,3);
+
+pstar = [wpSum(:,1)./weightSum, wpSum(:,2)./weightSum];
  
 % q_star
-qstar = calStar(weight, vLength, targetCP);
+wq = zeros(size(v,1), 2, size(targetCP, 1));
+for itr=1:size(targetCP,1)
+    wq(:,1,itr) = weight(:,itr).*targetCP(itr, 1);
+    wq(:,2,itr) = weight(:,itr).*targetCP(itr, 2);
+end
+
+wqSum = sum(wq, 3);
+
+qstar = [wqSum(:,1)./weightSum, wqSum(:,2)./weightSum];
+
+% p_hat
+phat = zeros(size(v,1), 2, size(sourceCP,1));
+for itr=1:size(sourceCP, 1)
+    phat(:,1,itr) = sourceCP(itr, 1) - pstar(:,1);
+    phat(:,2,itr) = sourceCP(itr, 2) - pstar(:,2);
+end
 
 % q_hat
-qhat = calHat(vLength, targetCP, qstar);
+qhat = zeros(size(v,1), 2, size(targetCP,1));
+for itr=1:size(targetCP, 1)
+    qhat(:,1,itr) = targetCP(itr, 1) - qstar(:,1);
+    qhat(:,2,itr) = targetCP(itr, 2) - qstar(:,2);
+end
 
 % Precompute fa(v) -> compute Aj
 % phat^T * w * phat
 % Though this solution requires the inversion of a matrix, the matrix is a contant size (2 X 2)
-phatTWphat = zeros(2, 2, vLength, size(sourceCP, 1));
-wphatT = zeros(2, vLength, size(targetCP,1));
+phatTWphat = zeros(2, 2, size(v,1), size(sourceCP, 1));
+wphatT = zeros(2, size(v,1), size(targetCP,1));
 for itr=1:size(sourceCP, 1)
     for itr2=1:size(v, 1)
         phatTWphat(:,:,itr2,itr) = phat(itr2,:,itr)' * weight(itr2,itr) * phat(itr2,:,itr);
@@ -55,8 +79,8 @@ end
 
 phatTwphatSum = sum(phatTWphat, 4);
 
-invphatTwphatSum = zeros(2, 2, vLength);
-for itr=1:vLength
+invphatTwphatSum = zeros(2, 2, size(v,1));
+for itr=1:size(v, 1)
     invphatTwphatSum(:,:,itr) = inv(phatTwphatSum(:,:,itr));
 end
 
@@ -65,7 +89,7 @@ vSubpstar = [v(:,1)-pstar(:,1), v(:,2)-pstar(:,2)];
 % Aj is a single scalar
 A = zeros(size(v, 1), size(targetCP, 1));
 for itr=1:size(targetCP, 1)
-    for itr2=1:vLength
+    for itr2=1:size(v, 1)
         A(itr2, itr) = vSubpstar(itr2,:)*invphatTwphatSum(:,:,itr2)*wphatT(:,itr2,itr);
     end
 end
