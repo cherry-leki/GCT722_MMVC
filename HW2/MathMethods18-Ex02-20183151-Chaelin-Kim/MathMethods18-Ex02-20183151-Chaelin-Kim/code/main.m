@@ -35,22 +35,75 @@ qstar = calStar(weight, vLen, targetCP);
 qhat = calHat(vLen, targetCP, qstar);
 
 %% Affine Transformation
-affineDeformCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-
-reshapeGinger = reshape(ginger, size(v, 1), numberOfColorChannels);
-affineImg = uint8(zeros(rows, columns, numberOfColorChannels));
-affineImg(:,:,1) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,1)), X, Y));
-affineImg(:,:,2) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,2)), X, Y));
-affineImg(:,:,3) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,3)), X, Y));
+% affineDeformCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+% 
+% reshapeGinger = reshape(ginger, size(v, 1), numberOfColorChannels);
+% affineImg = uint8(zeros(rows, columns, numberOfColorChannels));
+% affineImg(:,:,1) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,1)), X, Y));
+% affineImg(:,:,2) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,2)), X, Y));
+% affineImg(:,:,3) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,3)), X, Y));
 
 %% Similarity Transformation
+mphat_ortho = zeros(size(phat));
+for itr=1:size(sourceCP, 1)
+    mphat_ortho(:,1,itr) = -phat(:,2,itr);
+    mphat_ortho(:,2,itr) = phat(:,1,itr);
+end
 
+pMatrix = zeros(2, 2, vLen, size(sourceCP, 1));
+for itr=1:size(sourceCP,1)
+    for itr2=1:vLen
+        pMatrix(1,:,itr2,itr) = phat(itr2,:,itr);
+        pMatrix(2,:,itr2,itr) = -mphat_ortho(itr2,:,itr);
+    end
+end
+
+vSubpstar = [v(:,1)-pstar(:,1), v(:,2)-pstar(:,2)];
+mvSubpstar_ortho = [-vSubpstar(:,2) vSubpstar(:,1)];
+
+vSubpMatrix = zeros(2, 2, vLen);
+for itr=1:vLen
+    vSubpMatrix(1,:,itr) = vSubpstar(itr,:);
+    vSubpMatrix(2,:,itr) = -mvSubpstar_ortho(itr,:);
+end
+
+wphatphatT = zeros(vLen, size(sourceCP, 1));
+for itr=1:size(sourceCP, 1)
+    for itr2=1:vLen
+        wphatphatT(itr2,itr) = weight(itr2,itr) * phat(itr2,:,itr) * phat(itr2,:,itr)';
+    end
+end
+myus = sum(wphatphatT, 2);
+
+A = zeros(2, 2, vLen, size(sourceCP, 1));
+myusA = zeros(2, 2, vLen, size(sourceCP, 1));
+for itr=1:size(sourceCP, 1)
+    for itr2=1:vLen
+        A(:,:,itr2,itr) = weight(itr2, itr).* pMatrix(:,:,itr2,itr) * vSubpMatrix(:,:,itr2)';
+        myusA(:,:,itr2,itr) = (1/myus(itr2)).* A(:,:,itr2,itr);
+    end
+end
+
+qA = zeros(vLen,2,size(targetCP, 1));
+for itr=1:size(targetCP,1)
+    for itr2=1:vLen
+        qA(itr2,:,itr) = qhat(itr2,:,itr) * myusA(:,:,itr2,itr);
+    end
+end
+
+similarityDef = [sum(qA(:,1,:), 3) + qstar(:,1), sum(qA(:,2,:), 3) + qstar(:,2)];
+
+reshapeGinger = reshape(ginger, size(v, 1), numberOfColorChannels);
+similarityImg = uint8(zeros(rows, columns, numberOfColorChannels));
+similarityImg(:,:,1) = uint8(griddata(similarityDef(:,1), similarityDef(:,2), double(reshapeGinger(:,1)), X, Y));
+similarityImg(:,:,2) = uint8(griddata(similarityDef(:,1), similarityDef(:,2), double(reshapeGinger(:,2)), X, Y));
+similarityImg(:,:,3) = uint8(griddata(similarityDef(:,1), similarityDef(:,2), double(reshapeGinger(:,3)), X, Y));
 
 %% Rigid Transformation
 
 %% Show the original image and result images
 % figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
-subplot(1, 2, 1);
+subplot(2, 2, 1);
 imshow(ginger)
 title('Original Image')
 hold on;
@@ -63,9 +116,18 @@ plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 % [targetCP_x, targetCP_y] = ginput(8);
 % plot(targetCP_x, targetCP_y, 'x')
 hold off;
-subplot(1, 2, 2);
-imshow(affineImg)
-title('Affine Transform')
+
+% subplot(2, 2, 2);
+% imshow(affineImg)
+% title('Affine Transform')
+% hold on;
+% plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
+% plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
+hold off;
+
+subplot(2, 2, 3);
+imshow(similarityImg)
+title('Similarity Transform')
 hold on;
 plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
