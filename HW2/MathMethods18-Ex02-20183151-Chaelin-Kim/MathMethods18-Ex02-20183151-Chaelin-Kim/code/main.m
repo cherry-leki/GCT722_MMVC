@@ -32,11 +32,7 @@ qhat = calHat(vLen, targetCP, qstar);
 %% Affine Transformation
 affineDeformCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
 
-reshapeGinger = reshape(ginger, size(v, 1), numberOfColorChannels);
-affineImg = uint8(zeros(rows, columns, numberOfColorChannels));
-affineImg(:,:,1) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,1)), X, Y));
-affineImg(:,:,2) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,2)), X, Y));
-affineImg(:,:,3) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,3)), X, Y));
+affineImg = makeDefImg();
 
 %% Similarity Transformation
 similarityCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
@@ -47,46 +43,12 @@ similarityImg(:,:,2) = uint8(griddata(similarityCoord(:,1), similarityCoord(:,2)
 similarityImg(:,:,3) = uint8(griddata(similarityCoord(:,1), similarityCoord(:,2), double(reshapeGinger(:,3)), X, Y));
 
 %% Rigid Transformation
-phat_ortho = [-phat(:,2,:), phat(:,1,:)];
-pMat = zeros(2,2,vLen,size(sourceCP,1));
-for itr=1:vLen
-    pMat(:,:,itr,:) = [phat(itr,:,:); -phat_ortho(itr,:,:)];
-end
-
-vSubpstar = v - pstar;
-vSubpstar_ortho = [-vSubpstar(:,2), vSubpstar(:,1)];
-vSubpstarMat = zeros(2,2,vLen);
-for itr=1:vLen
-    vSubpstarMat(:,:,itr) = [vSubpstar(itr,:); -vSubpstar_ortho(itr,:)];
-end
-
-A = zeros(2,2,vLen,size(sourceCP,1));
-for itr=1:size(sourceCP, 1)
-    for itr2=1:vLen
-        A(:,:,itr2,itr) = weight(itr2, itr).*pMat(:,:,itr2,itr) * vSubpstarMat(:,:,itr2)';
-    end
-end
-
-qhatA = zeros(vLen,2,size(targetCP,1));
-for itr=1:size(targetCP,1)
-    for itr2=1:vLen
-        qhatA(itr2,:,itr) = qhat(itr2,:,itr) * A(:,:,itr2,itr);
-    end
-end
-
-frVector = sum(qhatA,3);
-vSubpstarLen = sqrt(vSubpstar(:,1).^2 + vSubpstar(:,2).^2);
-frVectorNormal = zeros(vLen, 2);
-for itr=1:vLen
-    frVectorNormal(itr,:) = frVector(itr,:) / norm(frVector(itr,:));
-end
-
-rigidDef = vSubpstarLen.*frVectorNormal + qstar;
+rigidCoord = doRigidDeform(weight,v,sourceCP,targetCP,pstar,phat,qstar,qhat);
 
 rigidImg = uint8(zeros(rows, columns, numberOfColorChannels));
-rigidImg(:,:,1) = uint8(griddata(rigidDef(:,1), rigidDef(:,2), double(reshapeGinger(:,1)), X, Y));
-rigidImg(:,:,2) = uint8(griddata(rigidDef(:,1), rigidDef(:,2), double(reshapeGinger(:,2)), X, Y));
-rigidImg(:,:,3) = uint8(griddata(rigidDef(:,1), rigidDef(:,2), double(reshapeGinger(:,3)), X, Y));
+rigidImg(:,:,1) = uint8(griddata(rigidCoord(:,1), rigidCoord(:,2), double(reshapeGinger(:,1)), X, Y));
+rigidImg(:,:,2) = uint8(griddata(rigidCoord(:,1), rigidCoord(:,2), double(reshapeGinger(:,2)), X, Y));
+rigidImg(:,:,3) = uint8(griddata(rigidCoord(:,1), rigidCoord(:,2), double(reshapeGinger(:,3)), X, Y));
 %% Show the original image and result images
 % figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
 subplot(2, 2, 1);
