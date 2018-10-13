@@ -35,13 +35,13 @@ qstar = calStar(weight, vLen, targetCP);
 qhat = calHat(vLen, targetCP, qstar);
 
 %% Affine Transformation
-% affineDeformCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-% 
-% reshapeGinger = reshape(ginger, size(v, 1), numberOfColorChannels);
-% affineImg = uint8(zeros(rows, columns, numberOfColorChannels));
-% affineImg(:,:,1) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,1)), X, Y));
-% affineImg(:,:,2) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,2)), X, Y));
-% affineImg(:,:,3) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,3)), X, Y));
+affineDeformCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+
+reshapeGinger = reshape(ginger, size(v, 1), numberOfColorChannels);
+affineImg = uint8(zeros(rows, columns, numberOfColorChannels));
+affineImg(:,:,1) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,1)), X, Y));
+affineImg(:,:,2) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,2)), X, Y));
+affineImg(:,:,3) = uint8(griddata(affineDeformCoord(:,1), affineDeformCoord(:,2), double(reshapeGinger(:,3)), X, Y));
 
 %% Similarity Transformation
 mphat_ortho = zeros(size(phat));
@@ -70,30 +70,31 @@ end
 wphatphatT = zeros(vLen, size(sourceCP, 1));
 for itr=1:size(sourceCP, 1)
     for itr2=1:vLen
-        wphatphatT(itr2, itr) = weight(itr2, itr).* phat(itr2,:,itr) * phat(itr2,:,itr)';
+        wphatphatT(itr2,itr) = weight(itr2,itr) * phat(itr2,:,itr) * phat(itr2,:,itr)';
     end
 end
 myus = sum(wphatphatT, 2);
 
 A = zeros(2, 2, vLen, size(sourceCP, 1));
-myuA = zeros(2, 2, vLen, size(sourceCP, 1));
+myusA = zeros(2, 2, vLen, size(sourceCP, 1));
 for itr=1:size(sourceCP, 1)
     for itr2=1:vLen
-        A(:, :, itr2, itr) = weight(itr2, itr).* pMatrix(:,:,itr2,itr)/vSubpMatrix(:,:,itr2);
-        myuA(:, :, itr2, itr) = (1/myus(itr2)).* A(:,:,itr2,itr);
+        A(:,:,itr2,itr) = weight(itr2, itr).* pMatrix(:,:,itr2,itr) * vSubpMatrix(:,:,itr2)';
+        myusA(:,:,itr2,itr) = (1/myus(itr2)).* A(:,:,itr2,itr);
     end
 end
 
 qA = zeros(vLen,2,size(targetCP, 1));
 for itr=1:size(targetCP,1)
     for itr2=1:vLen
-        qA(itr2,:,itr) = qhat(itr2,:,itr) * myuA(:,:,itr2,itr);
+        qA(itr2,:,itr) = qhat(itr2,:,itr) * myusA(:,:,itr2,itr);
     end
 end
 
 similarityDef = [sum(qA(:,1,:), 3) + qstar(:,1), sum(qA(:,2,:), 3) + qstar(:,2)];
 
-reshapeGinger = reshape(ginger, size(v, 1), numberOfColorChannels);
+similarityCoord = doSimil
+
 similarityImg = uint8(zeros(rows, columns, numberOfColorChannels));
 similarityImg(:,:,1) = uint8(griddata(similarityDef(:,1), similarityDef(:,2), double(reshapeGinger(:,1)), X, Y));
 similarityImg(:,:,2) = uint8(griddata(similarityDef(:,1), similarityDef(:,2), double(reshapeGinger(:,2)), X, Y));
