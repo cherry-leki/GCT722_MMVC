@@ -16,7 +16,6 @@ targetCPLen = size(targetCP,1);
 % 1. Make [phat; -phat_ortho]
 %	Calculate phat_ortho
 phat_ortho = [-phat(:,2,:), phat(:,1,:)];
-
 %	Make [phat; -phat_ortho] matrix [(x, y); (y, -x)]
 pMat = zeros(2, 2, vLen, sourceCPLen);
 for itr=1:vLen
@@ -27,7 +26,6 @@ end
 %   Calculate v-pstar & (v-pstar)_ortho
 vSubpstar = v - pstar;
 vSubpstar_ortho = [-vSubpstar(:,2) vSubpstar(:,1)];
-
 %   Make [(v - pstar); -(v - pstar)_ortho] matrix 
 vSubpstarMat = zeros(2, 2, vLen);
 for itr=1:vLen

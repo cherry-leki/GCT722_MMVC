@@ -42,7 +42,7 @@ rigidDefCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar,
 rigidImg = makeDefImg(ginger, rigidDefCoord);
 
 %% Show the original image and result images
-% figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
+figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
 subplot(2, 2, 1);
 imshow(ginger)
 title('Original Image')
