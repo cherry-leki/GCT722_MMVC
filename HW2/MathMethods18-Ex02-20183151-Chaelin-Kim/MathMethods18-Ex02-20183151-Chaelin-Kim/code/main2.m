@@ -13,7 +13,7 @@ targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
 [X, Y] = meshgrid(1:columns, 1:rows);
 v = reshape([X Y], [], 2);
 
-weight_alpha = 1;
+weight_alpha = 1.1;
 
 %% Affine Transformation
 % Calculate weight
@@ -54,14 +54,14 @@ qstar = [wqSum(:,1)./weightSum, wqSum(:,2)./weightSum];
 phat = zeros(size(v,1), 2, size(sourceCP,1));
 for itr=1:size(sourceCP, 1)
     phat(:,1,itr) = sourceCP(itr, 1) - pstar(:,1);
-    phat(:,2,itr) = sourceCP(itr, 1) - pstar(:,2);
+    phat(:,2,itr) = sourceCP(itr, 2) - pstar(:,2);
 end
 
 % q_hat
 qhat = zeros(size(v,1), 2, size(targetCP,1));
 for itr=1:size(targetCP, 1)
     qhat(:,1,itr) = targetCP(itr, 1) - qstar(:,1);
-    qhat(:,2,itr) = targetCP(itr, 1) - qstar(:,2);
+    qhat(:,2,itr) = targetCP(itr, 2) - qstar(:,2);
 end
 
 % Precompute fa(v) -> compute Aj
@@ -76,10 +76,11 @@ for itr=1:size(sourceCP, 1)
     wphatT(:, :, itr) = (weight(:,itr).*phat(:,:,itr))';
 end
 
-phatTWphatSum = sum(phatTWphat, 4);
-invphatTWphatSum = zeros(2, 2, size(v,1));
+phatTwphatSum = sum(phatTWphat, 4);
+
+invphatTwphatSum = zeros(2, 2, size(v,1));
 for itr=1:size(v, 1)
-    invphatTWphatSum(:,:,itr) = inv(phatTWphatSum(:,:,itr));
+    invphatTwphatSum(:,:,itr) = inv(phatTwphatSum(:,:,itr));
 end
 
 vSubpstar = [v(:,1)-pstar(:,1), v(:,2)-pstar(:,2)];
@@ -88,20 +89,19 @@ vSubpstar = [v(:,1)-pstar(:,1), v(:,2)-pstar(:,2)];
 A = zeros(size(v, 1), size(targetCP, 1));
 for itr=1:size(targetCP, 1)
     for itr2=1:size(v, 1)
-        A(itr2, itr) = vSubpstar(itr2,:)*invphatTWphatSum(:,:,itr2)*wphatT(:,itr2,itr);
+        A(itr2, itr) = vSubpstar(itr2,:)*invphatTwphatSum(:,:,itr2)*wphatT(:,itr2,itr);
     end
 end
 qhat_reshape_x = reshape(qhat(:,1,:), size(v,1), size(targetCP,1));
 qhat_reshape_y = reshape(qhat(:,2,:), size(v,1), size(targetCP,1));
 affineDef = [sum(A.* qhat_reshape_x, 2) + qstar(:,1), sum(A.* qhat_reshape_y, 2) + qstar(:,2)];
 
-
 reshapeGinger = reshape(ginger, size(v, 1), numberOfColorChannels);
 affineGinger = uint8(zeros(rows, columns, numberOfColorChannels));
 affineGinger(:,:,1) = uint8(griddata(affineDef(:,1), affineDef(:,2), double(reshapeGinger(:,1)), X, Y));
 affineGinger(:,:,2) = uint8(griddata(affineDef(:,1), affineDef(:,2), double(reshapeGinger(:,2)), X, Y));
 affineGinger(:,:,3) = uint8(griddata(affineDef(:,1), affineDef(:,2), double(reshapeGinger(:,3)), X, Y));
-% affineGinger = reshape(affineGinger, rows, columns, numberOfColorChannels);
+
 %% Similarity Transformation
 
 %% Rigid Transformation
@@ -109,7 +109,6 @@ affineGinger(:,:,3) = uint8(griddata(affineDef(:,1), affineDef(:,2), double(resh
 %% Show the original image and result images
 % figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
 subplot(1, 2, 1);
-% image(ginger)
 imshow(ginger)
 title('Original Image')
 hold on;
@@ -124,14 +123,12 @@ plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 subplot(1, 2, 2);
 imshow(affineGinger)
+title('Affine Transform')
 hold on;
 plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 %% subplot
-% subplot(2, 2, 2);
-% imshow(ginger)
-% title('Affine Transform')
 % subplot(2, 2, 3);
 % imshow(ginger)
 % title('Similarity Transform')
