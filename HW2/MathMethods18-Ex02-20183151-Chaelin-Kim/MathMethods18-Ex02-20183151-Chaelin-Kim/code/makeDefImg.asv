@@ -1,13 +1,10 @@
 function [ defImg ] = makeDefImg( originImg, defCoord )
-% Deform the image with deformed coordinates
+%MAKEDEFIMG 이 함수의 요약 설명 위치
+%   자세한 설명 위치
 [rows, columns, numOfColorChannels] = size(originImg);
 [X, Y] = meshgrid(1:columns, 1:rows);
-
-% reshape the image because defCoord is the list of [x, y]
-% -> size: ((row * columns)x2)
 reshapeImg = reshape(originImg, rows*columns, numOfColorChannels);
 
-% Deform the image
 defImg = uint8(zeros(rows, columns, numOfColorChannels));
 % Color channel: Red(1), Green(2), Blue(3)
 for itr = 1:numOfColorChannels
