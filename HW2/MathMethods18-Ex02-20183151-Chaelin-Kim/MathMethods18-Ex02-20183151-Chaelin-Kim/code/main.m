@@ -11,6 +11,7 @@ targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
             [160, 266]; [147, 369]; [272, 369]];
 
 [X, Y] = meshgrid(1:columns, 1:rows);
+
 v = reshape([X Y], [], 2);
 vLen = size(v,1);
 
@@ -46,7 +47,7 @@ similarityImg(:,:,2) = uint8(griddata(similarityCoord(:,1), similarityCoord(:,2)
 similarityImg(:,:,3) = uint8(griddata(similarityCoord(:,1), similarityCoord(:,2), double(reshapeGinger(:,3)), X, Y));
 
 %% Rigid Transformation
-
+phat_ortho = [-phat(:,2,:), phat(:,1,:)];
 
 
 %% Show the original image and result images

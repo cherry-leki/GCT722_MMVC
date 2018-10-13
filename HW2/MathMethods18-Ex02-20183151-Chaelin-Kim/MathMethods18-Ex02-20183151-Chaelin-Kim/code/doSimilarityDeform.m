@@ -15,11 +15,7 @@ targetCPLen = size(targetCP,1);
 
 % 1. Make [phat; -phat_ortho]
 %	Calculate phat_ortho
-phat_ortho = zeros(size(phat));
-for itr=1:sourceCPLen
-    phat_ortho(:,1,itr) = -phat(:,2,itr);
-    phat_ortho(:,2,itr) =  phat(:,1,itr);
-end
+phat_ortho = [-phat(:,2,:), phat(:,1,:)];
 
 %	Make [phat; -phat_ortho] matrix [(x, y); (y, -x)]
 pMatrix = zeros(2, 2, vLen, sourceCPLen);
