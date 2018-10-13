@@ -30,25 +30,17 @@ qstar = calStar(weight, vLen, targetCP);
 qhat = calHat(vLen, targetCP, qstar);
 
 %% Affine Transformation
-affineDeformCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-
-affineImg = makeDefImg();
+affineDefCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+affineImg = makeDefImg(ginger, affineDefCoord);
 
 %% Similarity Transformation
-similarityCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-
-similarityImg = uint8(zeros(rows, columns, numberOfColorChannels));
-similarityImg(:,:,1) = uint8(griddata(similarityCoord(:,1), similarityCoord(:,2), double(reshapeGinger(:,1)), X, Y));
-similarityImg(:,:,2) = uint8(griddata(similarityCoord(:,1), similarityCoord(:,2), double(reshapeGinger(:,2)), X, Y));
-similarityImg(:,:,3) = uint8(griddata(similarityCoord(:,1), similarityCoord(:,2), double(reshapeGinger(:,3)), X, Y));
+similarityDefCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+similarityImg = makeDefImg(ginger, similarityDefCoord);
 
 %% Rigid Transformation
-rigidCoord = doRigidDeform(weight,v,sourceCP,targetCP,pstar,phat,qstar,qhat);
+rigidDefCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+rigidImg = makeDefImg(ginger, rigidDefCoord);
 
-rigidImg = uint8(zeros(rows, columns, numberOfColorChannels));
-rigidImg(:,:,1) = uint8(griddata(rigidCoord(:,1), rigidCoord(:,2), double(reshapeGinger(:,1)), X, Y));
-rigidImg(:,:,2) = uint8(griddata(rigidCoord(:,1), rigidCoord(:,2), double(reshapeGinger(:,2)), X, Y));
-rigidImg(:,:,3) = uint8(griddata(rigidCoord(:,1), rigidCoord(:,2), double(reshapeGinger(:,3)), X, Y));
 %% Show the original image and result images
 % figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
 subplot(2, 2, 1);

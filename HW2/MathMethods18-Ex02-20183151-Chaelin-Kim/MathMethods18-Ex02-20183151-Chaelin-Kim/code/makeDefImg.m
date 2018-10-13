@@ -1,13 +1,14 @@
-function [ defImg ] = makeDefImg( originImg, vLen, numOfColorChannels, defCoord )
+function [ defImg ] = makeDefImg( originImg, defCoord )
 %MAKEDEFIMG 이 함수의 요약 설명 위치
 %   자세한 설명 위치
-[rows, columns, ~] = size(originImg);
+[rows, columns, numOfColorChannels] = size(originImg);
 [X, Y] = meshgrid(1:columns, 1:rows);
-reshapeImg = reshape(originImg, vLen, numOfColorChannels);
+reshapeImg = reshape(originImg, rows*columns, numOfColorChannels);
 
-defImg = uint8(zeros(rows, columns, numberOfColorChannels));
-defImg(:,:,1) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,1)), X, Y));
-defImg(:,:,2) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,2)), X, Y));
-defImg(:,:,3) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,3)), X, Y));
+defImg = uint8(zeros(rows, columns, numOfColorChannels));
+for itr = 1:numOfColorChannels
+    defImg(:,:,itr) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,itr)), X, Y));
+end
+
 end
 
