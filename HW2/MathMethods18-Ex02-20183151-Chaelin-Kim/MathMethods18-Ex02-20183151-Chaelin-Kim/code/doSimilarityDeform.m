@@ -4,6 +4,8 @@ function [ similarityDef ] = doSimilarityDeform( weight, v, sourceCP, targetCP, 
 %   To alter our deformation technique to only use similarity transformations,
 %   we constrain the matrix M to have the property that
 %   MTM =(¥ë^2)I for some scalar ¥ë.
+% => Similarity transformation: translation, rotation, uniform scaling
+%                               (no shear and non-uniform scaling)
 
 % Calculate length
 vLen = size(v,1);
@@ -59,6 +61,7 @@ for itr=1:targetCPLen
     end
 end
 
+% fs(v) = sum(qhat * (1/¥ìs * A)) + qstar
 similarityDef = [sum(qhatinvmyuA(:,1,:), 3) + qstar(:,1), sum(qhatinvmyuA(:,2,:), 3) + qstar(:,2)];
 end
 

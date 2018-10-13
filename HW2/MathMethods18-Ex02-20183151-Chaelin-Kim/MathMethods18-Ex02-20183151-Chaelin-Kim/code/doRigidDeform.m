@@ -1,8 +1,9 @@
-function [ rigidDef, test ] = doRigidDeform( weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat )
+function [ rigidDef ] = doRigidDeform( weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat )
 % For realistic shapes, deformations should be as rigid as possible;
 % that is, the space of deformations should not even include uniform scaling.
 %   Rigid deformations are related to the similarity deformations
 %   MTM = I -> non-linear constraint
+% => Rigid transformation: translation, rotation
 
 % Calculate length
 vLen = size(v,1);
@@ -61,6 +62,7 @@ for itr=1:vLen
     frVectorNormal(itr,:) = frVector(itr,:) / norm(frVector(itr,:));
 end
 
+% fr(v) = |v - pstar| * (normalized frVector) + qstar
 rigidDef = vSubpstarLen.*frVectorNormal + qstar;
 end
 
