@@ -1,9 +1,19 @@
 clear;
 
 %% Initial Setting
-ginger = imread('../materials/ginger.png');
+% srcImg = imread('../materials/ginger.png');
+srcImg = imread('../materials/Pooh.jpg');
 
-[rows, columns, numberOfColorChannels] = size(ginger);
+[rows, columns, numberOfColorChannels] = size(srcImg);
+
+% Create a mesh grid for all the coordinate in the matrix
+[X, Y] = meshgrid(1:columns, 1:rows);
+
+% Make the image to pixel point list (rows x columns) x 1 
+v = reshape([X Y], [], 2);
+vLen = size(v,1);
+
+weightAlpha = 1.1;
 
 % Example Control point
 % sourceCP = [[166, 55]; [40, 157]; [175, 185]; [270, 157]; [335, 157]; ...
@@ -11,17 +21,11 @@ ginger = imread('../materials/ginger.png');
 % targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
 %             [160, 266]; [147, 369]; [272, 369]];
 
-[X, Y] = meshgrid(1:columns, 1:rows);
-
-v = reshape([X Y], [], 2);
-vLen = size(v,1);
-
-weightAlpha = 1.1;
-
+%% Show the original image
 % Select some input and output control points
 figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
 subplot(2, 2, 1);
-imshow(ginger)
+imshow(srcImg)
 title('Original Image')
 hold on;
 sourceCP = ginput;
@@ -44,26 +48,17 @@ qhat = calHat(vLen, targetCP, qstar);
 
 %% Affine Transformation
 affineDefCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-affineImg = makeDefImg(ginger, affineDefCoord);
+affineImg = makeDefImg(srcImg, affineDefCoord);
 
 %% Similarity Transformation
 similarityDefCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-similarityImg = makeDefImg(ginger, similarityDefCoord);
+similarityImg = makeDefImg(srcImg, similarityDefCoord);
 
 %% Rigid Transformation
 rigidDefCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-rigidImg = makeDefImg(ginger, rigidDefCoord);
+rigidImg = makeDefImg(srcImg, rigidDefCoord);
 
-%% Show the original image and result images
-% figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
-% subplot(2, 2, 1);
-% imshow(ginger)
-% title('Original Image')
-% hold on;
-% plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
-% plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
-% hold off;
-
+%% Show result images
 subplot(2, 2, 2);
 imshow(affineImg)
 title('Affine Transform')
@@ -87,3 +82,8 @@ hold on;
 plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
+
+
+imwrite(affineImg, '../materials/affineVer.png');
+imwrite(similarityImg, '../materials/similarityVer.png');
+imwrite(rigidImg, '../materials/rigidVer.png');
