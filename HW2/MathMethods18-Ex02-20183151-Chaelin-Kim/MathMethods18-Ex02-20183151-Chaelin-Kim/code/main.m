@@ -5,10 +5,11 @@ ginger = imread('../materials/ginger.png');
 
 [rows, columns, numberOfColorChannels] = size(ginger);
 
-sourceCP = [[166, 55]; [40, 157]; [175, 185]; [270, 157]; [335, 157]; ...
-            [181, 262]; [118, 369]; [252, 369]];
-targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
-            [160, 266]; [147, 369]; [272, 369]];
+% Example Control point
+% sourceCP = [[166, 55]; [40, 157]; [175, 185]; [270, 157]; [335, 157]; ...
+%             [181, 262]; [118, 369]; [252, 369]];
+% targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
+%             [160, 266]; [147, 369]; [272, 369]];
 
 [X, Y] = meshgrid(1:columns, 1:rows);
 
@@ -16,6 +17,18 @@ v = reshape([X Y], [], 2);
 vLen = size(v,1);
 
 weightAlpha = 1.1;
+
+% Select some input and output control points
+figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
+subplot(2, 2, 1);
+imshow(ginger)
+title('Original Image')
+hold on;
+sourceCP = ginput;
+plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
+targetCP = ginput(size(sourceCP, 1));
+plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
+hold off;
 
 %% Calculate weight, star, hat
 % Calculate weight
@@ -42,14 +55,14 @@ rigidDefCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar,
 rigidImg = makeDefImg(ginger, rigidDefCoord);
 
 %% Show the original image and result images
-figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
-subplot(2, 2, 1);
-imshow(ginger)
-title('Original Image')
-hold on;
-plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
-plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
-hold off;
+% figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
+% subplot(2, 2, 1);
+% imshow(ginger)
+% title('Original Image')
+% hold on;
+% plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
+% plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
+% hold off;
 
 subplot(2, 2, 2);
 imshow(affineImg)
@@ -74,16 +87,3 @@ hold on;
 plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
-
-% Select some input and output control points
-% [sourceCP_x, sourceCP_y] = ginput(8);
-% plot(sourceCP_x, sourceCP_y, 'o')
-% [targetCP_x, targetCP_y] = ginput(8);
-% plot(targetCP_x, targetCP_y, 'x')
-%% subplot
-% subplot(2, 2, 3);
-% imshow(ginger)
-% title('Similarity Transform')
-% subplot(2, 2, 4);
-% imshow(ginger)
-% title('Rigid Transform')
