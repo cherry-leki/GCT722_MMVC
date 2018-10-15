@@ -8,8 +8,9 @@ function [ defImg ] = makeDefImg( originImg, defCoord )
 reshapeImg = reshape(originImg, rows*columns, numOfColorChannels);
 
 % Deform the image
-defImg = uint8(zeros(rows, columns, numOfColorChannels));
+% Use griddata to find the new values of the new transformed coordinates
 % Color channel: Red(1), Green(2), Blue(3)
+defImg = uint8(zeros(rows, columns, numOfColorChannels));
 for itr = 1:numOfColorChannels
     defImg(:,:,itr) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,itr)), X, Y));
 end
