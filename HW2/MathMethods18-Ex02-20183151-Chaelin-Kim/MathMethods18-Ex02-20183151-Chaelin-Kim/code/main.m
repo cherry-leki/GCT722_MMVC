@@ -16,10 +16,10 @@ vLen = size(v,1);
 weightAlpha = 1.1;
 
 % Example Control point
-% sourceCP = [[166, 55]; [40, 157]; [175, 185]; [270, 157]; [335, 157]; ...
-%             [181, 262]; [118, 369]; [252, 369]];
-% targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
-%             [160, 266]; [147, 369]; [272, 369]];
+sourceCP = [[166, 55]; [40, 157]; [175, 185]; [270, 157]; [335, 157]; ...
+            [181, 262]; [118, 369]; [252, 369]];
+targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
+            [160, 266]; [147, 369]; [272, 369]];
 
 %% Show the original image
 % Select some input and output control points
@@ -28,15 +28,16 @@ subplot(2, 2, 1);
 imshow(srcImg)
 title('Original Image')
 hold on;
-sourceCP = ginput;
+% sourceCP = ginput;
 plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
-targetCP = ginput(size(sourceCP, 1));
+% targetCP = ginput(size(sourceCP, 1));
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
 %% Calculate weight, star, hat
 % Calculate weight
 weight = calWeight(v, sourceCP, weightAlpha);
+bWeight = calWeight(v, targetCP, weightAlpha);
 
 % Calculate pstar & phat
 pstar = calStar(weight, vLen, sourceCP);
@@ -47,8 +48,9 @@ qstar = calStar(weight, vLen, targetCP);
 qhat = calHat(vLen, targetCP, qstar);
 
 %% Affine Transformation
-affineDefCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+[affineDefCoord,affineDefCoordBack] = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
 affineImg = makeDefImg(srcImg, affineDefCoord);
+affineImgBack = makeDefImgBack(srcImg, affineDefCoordBack);
 
 %% Similarity Transformation
 similarityDefCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
@@ -59,7 +61,7 @@ rigidDefCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar,
 rigidImg = makeDefImg(srcImg, rigidDefCoord);
 
 %% Show result images
-subplot(2, 2, 2);
+subplot(2, 4, 3);
 imshow(affineImg)
 title('Affine Transform')
 hold on;
@@ -67,7 +69,15 @@ plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
-subplot(2, 2, 3);
+subplot(2, 4, 4);
+imshow(affineImgBack)
+title('Affine Transform')
+hold on;
+plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
+plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
+hold off;
+
+subplot(2, 4, 5);
 imshow(similarityImg)
 title('Similarity Transform')
 hold on;
@@ -75,7 +85,7 @@ plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
-subplot(2, 2, 4);
+subplot(2, 4, 7);
 imshow(rigidImg)
 title('Rigid Transform')
 hold on;

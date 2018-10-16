@@ -1,4 +1,4 @@
-function [ affineDef ] = doAffineDeform( weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat )
+function [ affineDef, b_affineDef ] = doAffineDeform( weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat )
 %DOAFFINEDEFORM 이 함수의 요약 설명 위치
 % lv(x) = xM + T
 %   - M: Linear transformation
@@ -53,6 +53,21 @@ qhat_reshape_y = reshape(qhat(:,2,:), size(v,1), size(targetCP,1));
 
 % result = sum(A * qhat) + qstar
 affineDef = [sum(A.* qhat_reshape_x, 2) + qstar(:,1), sum(A.* qhat_reshape_y, 2) + qstar(:,2)];
+
+% Backward Warping
+wphatTqhat = zeros(2, 2, vLen, targetCPLen);
+for itr=1:targetCPLen
+    for itr2=1:vLen
+        wphatTqhat(:,:,itr2,itr) = wphatT(:,itr2,itr) * qhat(itr2,:,itr);
+    end
+end
+wphatTqhatSum = sum(wphatTqhat, 4);
+M = zeros(2, 2, vLen);
+b_affineDef = zeros(vLen, 2);
+for itr=1:vLen
+    M(:,:,itr) = invphatTwphatSum(:,:,itr) * wphatTqhatSum(:,:,itr);
+    b_affineDef(itr,:) = (v(itr,:) - qstar(itr,:)) * inv(M(:,:,itr)) + pstar(itr,:);
+end
 
 end
 
