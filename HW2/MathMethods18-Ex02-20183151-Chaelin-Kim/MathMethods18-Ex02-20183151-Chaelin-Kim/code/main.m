@@ -1,8 +1,8 @@
 clear;
 
 %% Initial Setting
-% srcImg = imread('../materials/ginger.png');
-srcImg = imread('../materials/Pooh.jpg');
+srcImg = imread('../materials/ginger.png');
+% srcImg = imread('../materials/Pooh.jpg');
 
 [rows, columns, numberOfColorChannels] = size(srcImg);
 
@@ -84,6 +84,6 @@ plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
 
-imwrite(affineImg, '../materials/affineVer.png');
-imwrite(similarityImg, '../materials/similarityVer.png');
-imwrite(rigidImg, '../materials/rigidVer.png');
+% imwrite(affineImg, '../materials/affineVer.png');
+% imwrite(similarityImg, '../materials/similarityVer.png');
+% imwrite(rigidImg, '../materials/rigidVer.png');

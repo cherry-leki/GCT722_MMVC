@@ -48,7 +48,6 @@ for itr=1:targetCPLen
     end
 end
 
-% 이 시점에서 target point 입력 받아야되려나
 qhat_reshape_x = reshape(qhat(:,1,:), size(v,1), size(targetCP,1));
 qhat_reshape_y = reshape(qhat(:,2,:), size(v,1), size(targetCP,1));
 
