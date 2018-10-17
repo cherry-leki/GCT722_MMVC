@@ -19,9 +19,9 @@ targetCPLen = size(targetCP,1);
 %	Calculate phat_ortho
 phat_ortho = [-phat(:,2,:), phat(:,1,:)];
 %	Make [phat; -phat_ortho] matrix [(x, y); (y, -x)]
-pMat = zeros(2, 2, vLen, sourceCPLen);
+phatMat = zeros(2, 2, vLen, sourceCPLen);
 for itr=1:vLen
-    pMat(:,:,itr,:) = [phat(itr,:,:); -phat_ortho(itr,:,:)];
+    phatMat(:,:,itr,:) = [phat(itr,:,:); -phat_ortho(itr,:,:)];
 end
 
 % 2. Make [(v - pstar); -(v - pstar)_ortho]
@@ -48,7 +48,7 @@ A = zeros(2, 2, vLen, sourceCPLen);
 invmyuA = zeros(2, 2, vLen, sourceCPLen);
 for itr=1:sourceCPLen
     for itr2=1:vLen
-        A(:,:,itr2,itr) = weight(itr2, itr).* pMat(:,:,itr2,itr) * vSubpstarMat(:,:,itr2)';
+        A(:,:,itr2,itr) = weight(itr2, itr).* phatMat(:,:,itr2,itr) * vSubpstarMat(:,:,itr2)';
         invmyuA(:,:,itr2,itr) = (1/myu(itr2)).* A(:,:,itr2,itr);
     end
 end
@@ -63,5 +63,32 @@ end
 
 % fs(v) = sum(qhat * (1/¥ìs * A)) + qstar
 similarityDef = [sum(qhatinvmyuA(:,1,:), 3) + qstar(:,1), sum(qhatinvmyuA(:,2,:), 3) + qstar(:,2)];
+
+% % Backward Warping
+% qhat_ortho = [-qhat(:,2,:), qhat(:,1,:)];
+% qhatTMat = zeros(2, 2, vLen, sourceCPLen);
+% for itr=1:sourceCPLen
+%     for itr2=1:vLen
+%         qhatTMat(:,:,itr2,itr) = [qhat(itr2,:,itr)', -qhat_ortho(itr2,:,itr)'];
+%     end
+% end
+% 
+% wphatMatqhatMat = zeros(2, 2, vLen, sourceCPLen);
+% for itr=1:sourceCPLen
+%     for itr2=1:vLen
+%         wphatMatqhatMat(:, :, itr2, itr) = ...
+%             weight(itr2,itr) * phatMat(:,:,itr2,itr) * qhatTMat(:,:,itr2,itr);
+%     end
+% end
+% 
+% wphatvecTqhatvecSum = sum(wphatMatqhatMat, 4);
+% 
+% M = zeros(2, 2, vLen);
+% b_similarityDef = zeros(vLen, 2);
+% for itr=1:vLen
+%     M(:,:,itr) = (1./myu(itr)) * wphatvecTqhatvecSum(:,:,itr);
+%     b_similarityDef(itr,:) = (v(itr,:) - qstar(itr,:)) * inv(M(:,:,itr)) + pstar(itr,:);
+% end
+
 end
 

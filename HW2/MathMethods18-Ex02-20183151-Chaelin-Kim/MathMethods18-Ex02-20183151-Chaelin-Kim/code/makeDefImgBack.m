@@ -15,7 +15,7 @@ bDefCoord_x = reshape(bDefCoord(:,1), rows, columns);
 bDefCoord_y = reshape(bDefCoord(:,2), rows, columns);
 defImg = uint8(zeros(rows, columns, numOfColorChannels));
 for itr = 1:numOfColorChannels
-    defImg(:,:,itr) = uint8(griddata(v(:,1), v(:,2), double(reshapeImg(:,itr)), bDefCoord_x, bDefCoord_y));
+    defImg(:,:,itr) = uint8(griddata(v(:,1), v(:,2), double(reshapeImg(:,itr)), bDefCoord_x, bDefCoord_y, 'cubic'));
 end
 
 % No interpolation

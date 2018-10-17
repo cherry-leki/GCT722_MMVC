@@ -12,7 +12,7 @@ reshapeImg = reshape(originImg, rows*columns, numOfColorChannels);
 % Color channel: Red(1), Green(2), Blue(3)
 defImg = uint8(zeros(rows, columns, numOfColorChannels));
 for itr = 1:numOfColorChannels
-    defImg(:,:,itr) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,itr)), X, Y));
+    defImg(:,:,itr) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,itr)), X, Y, 'cubic'));
 end
 
 % No interpolation

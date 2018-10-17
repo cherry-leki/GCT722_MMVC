@@ -23,8 +23,8 @@ targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
 
 %% Show the original image
 % Select some input and output control points
-figure('units','pixels','pos',[100 100 ((columns * 2) + 30) ((rows * 2) + 30)])
-subplot(2, 2, 1);
+figure('units','pixels','pos',[100 100 ((columns * 4) + 30) ((rows * 2) + 30)])
+subplot(2, 4, 1);
 imshow(srcImg)
 title('Original Image')
 hold on;
@@ -35,54 +35,83 @@ plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
 %% Calculate weight, star, hat
-% Calculate weight
+% Calculate weight for forward warping and backward warping
 weight = calWeight(v, sourceCP, weightAlpha);
+weight_b = calWeight(v, targetCP, weightAlpha);
 
-% Calculate pstar & phat
+% Calculate pstar & phat for forward warping
 pstar = calStar(weight, vLen, sourceCP);
 phat = calHat(vLen, sourceCP, pstar);
  
-% Calculate qstar & qhat
+% Calculate qstar & qhat for forward warping
 qstar = calStar(weight, vLen, targetCP);
 qhat = calHat(vLen, targetCP, qstar);
 
+% Calculate pstar & phat for back warping
+pstar_b = calStar(weight, vLen, targetCP);
+phat_b = calHat(vLen, targetCP, pstar);
+ 
+% Calculate qstar & qhat for back warping
+qstar_b = calStar(weight, vLen, sourceCP);
+qhat_b = calHat(vLen, sourceCP, qstar);
+
 %% Affine Transformation
-[affineDefCoord,bAffineDefCoord] = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-[affineImg = makeDefImg2(srcImg, affineDefCoord, bAffineDefCoord);
-affineImg2, defCoord_y] = makeDefImg(srcImg, affineDefCoord);
+affineDefCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+affineDefCoord_b = doAffineDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
+affineImg = makeDefImg(srcImg, affineDefCoord);
+affineImgBack = makeDefImgBack(srcImg, affineDefCoord_b);
 
 %% Similarity Transformation
-% similarityDefCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-% similarityImg = makeDefImg(srcImg, similarityDefCoord);
+similarityDefCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+similarityDefCoord_b = doSimilarityDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
+similarityImg = makeDefImg(srcImg, similarityDefCoord);
+similarityImgBack = makeDefImgBack(srcImg, similarityDefCoord_b);
 
 %% Rigid Transformation
-% rigidDefCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-% rigidImg = makeDefImg(srcImg, rigidDefCoord);
+rigidDefCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+rigidDefCoord_b = doRigidDeform(weight_b, v, targetCP, sourceCP, p
+rigidImg = makeDefImg(srcImg, rigidDefCoord);
 
 %% Show result images
-subplot(2, 2, 2);
+subplot(2, 4, 2);
 imshow(affineImg)
-title('Affine Transform')
+title('Affine Transform(Forward Warping)')
 hold on;
 plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
-% subplot(2, 2, 3);
-% imshow(similarityImg)
-% title('Similarity Transform')
-% hold on;
-% plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
-% plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
-% hold off;
-% 
-% subplot(2, 2, 4);
-% imshow(affineImg2)
-% title('Rigid Transform')
-% hold on;
-% plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
-% plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
-% hold off;
+subplot(2, 4, 6);
+imshow(affineImgBack)
+title('Affine Transform(Backward Warping)')
+hold on;
+plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
+plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
+hold off;
+
+subplot(2, 4, 3);
+imshow(similarityImg)
+title('Similarity Transform(Forward Warping)')
+hold on;
+plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
+plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
+hold off;
+
+subplot(2, 4, 7);
+imshow(similarityImgBack)
+title('Similarity Transform(Backward Warping)')
+hold on;
+plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
+plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
+hold off;
+
+subplot(2, 4, 4);
+imshow(rigidImg)
+title('Rigid Transform')
+hold on;
+plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
+plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
+hold off;
 
 
 % imwrite(affineImg, '../materials/affineVer.png');
