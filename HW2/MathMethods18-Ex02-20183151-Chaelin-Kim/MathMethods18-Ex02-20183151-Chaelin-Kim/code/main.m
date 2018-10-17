@@ -1,10 +1,11 @@
 clear;
 
 %% Initial Setting
-srcImg = imread('../materials/ginger.png');
+imgFilePath = '../materials/ginger.png';
+srcImg = imread(imgFilePath);
 % srcImg = imread('../materials/Pooh.jpg');
 
-[rows, columns, numberOfColorChannels] = size(srcImg);
+[rows, columns, ~] = size(srcImg);
 
 % Create a mesh grid for all the coordinate in the matrix
 [X, Y] = meshgrid(1:columns, 1:rows);
@@ -15,7 +16,7 @@ vLen = size(v,1);
 
 weightAlpha = 1.1;
 
-% Example Control point
+% % Example Control point
 sourceCP = [[166, 55]; [40, 157]; [175, 185]; [270, 157]; [335, 157]; ...
             [181, 262]; [118, 369]; [252, 369]];
 targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
@@ -23,7 +24,7 @@ targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
 
 %% Show the original image
 % Select some input and output control points
-figure('units','pixels','pos',[100 100 ((columns * 4) + 30) ((rows * 2) + 30)])
+figure('units','pixels','pos',[100 100 ((columns * 4)) ((rows * 2))])
 subplot(2, 4, [1,5]);
 imshow(srcImg)
 title('Original Image')
@@ -58,24 +59,25 @@ qstar_b = calStar(weight_b, vLen, sourceCP);
 qhat_b = calHat(vLen, sourceCP, qstar_b);
 
 %% Affine Transformation
-affineDefCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-affineDefCoord_b = doAffineDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
-affineImg = makeDefImg(srcImg, affineDefCoord);
-affineImg_b = makeDefImgBack(srcImg, affineDefCoord_b);
+affineCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+affineCoord_b = doAffineDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
+affineImg = makeDefImg(srcImg, affineCoord);
+affineImg_b = makeDefImgBack(srcImg, affineCoord_b);
 
 %% Similarity Transformation
-similarityDefCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-similarityDefCoord_b = doSimilarityDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
-similarityImg = makeDefImg(srcImg, similarityDefCoord);
-similarityImg_b = makeDefImgBack(srcImg, similarityDefCoord_b);
+similarityCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+similarityCoord_b = doSimilarityDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
+similarityImg = makeDefImg(srcImg, similarityCoord);
+similarityImg_b = makeDefImgBack(srcImg, similarityCoord_b);
 
 %% Rigid Transformation
-rigidDefCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
-rigidDefCoord_b = doRigidDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
-rigidImg = makeDefImg(srcImg, rigidDefCoord);
-rigidImg_b = makeDefImgBack(srcImg, rigidDefCoord_b);
+rigidCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
+rigidCoord_b = doRigidDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
+rigidImg = makeDefImg(srcImg, rigidCoord);
+rigidImg_b = makeDefImgBack(srcImg, rigidCoord_b);
 
 %% Show result images
+% The result of affine transformation
 subplot(2, 4, 2);
 imshow(affineImg)
 title('Affine Transform(Forward Warping)')
@@ -92,6 +94,7 @@ plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
+% The result of similarity transformation
 subplot(2, 4, 3);
 imshow(similarityImg)
 title('Similarity Transform(Forward Warping)')
@@ -108,6 +111,7 @@ plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
+% The result of rigid transformation
 subplot(2, 4, 4);
 imshow(rigidImg)
 title('Rigid Transform(Forward Warping)')
@@ -124,7 +128,12 @@ plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
-
-% imwrite(affineImg, '../materials/affineVer.png');
-% imwrite(similarityImg, '../materials/similarityVer.png');
-% imwrite(rigidImg, '../materials/rigidVer.png');
+% Save result images
+[~,srcImgName,~] = fileparts(imgFilePath);
+srcImgName = string(srcImgName) + '.png';
+imwrite(affineImg, ['../materials/resultImage/affine' srcImgName{1}]);
+imwrite(affineImg_b, ['../materials/resultImage/affineb' srcImgName{1}]);
+imwrite(similarityImg, ['../materials/resultImage/similarity' srcImgName{1}]);
+imwrite(similarityImg_b, ['../materials/resultImage/similarityb' srcImgName{1}]);
+imwrite(rigidImg, ['../materials/resultImage/rigid' srcImgName{1}]);
+imwrite(rigidImg_b, ['../materials/resultImage/rigidb' srcImgName{1}]);
