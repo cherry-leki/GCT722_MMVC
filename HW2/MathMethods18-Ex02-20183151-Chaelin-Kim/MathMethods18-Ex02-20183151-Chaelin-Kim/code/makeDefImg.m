@@ -25,8 +25,10 @@ end
 %     if y <= 0, y = 1; end
 %     if x >= columns, x = columns; end
 %     if y >= rows,    y = rows;    end
+%
 %     defImg((x-1) * rows + y, :) = reshapeImg(itr, :);
 % end
+% 
 % defImg = uint8(reshape(defImg, rows, columns, numOfColorChannels));
 
 end

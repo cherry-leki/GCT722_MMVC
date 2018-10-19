@@ -2,18 +2,25 @@ function [defImg] = makeDefImg( originImg, defCoord )
 % Deform the image with deformed coordinates
 [rows, columns, numOfColorChannels] = size(originImg);
 [X, Y] = meshgrid(1:columns, 1:rows);
+v = reshape([X Y], [], 2);
 
 % reshape the image because defCoord is the list of [x, y]
 % -> size: ((row * columns)x2)
 reshapeImg = reshape(originImg, rows*columns, numOfColorChannels);
-
+% originImg = fliplr(originImg);
 % Deform the image with interpolation
 % Use griddata to find the new values of the new transformed coordinates
 % Color channel: Red(1), Green(2), Blue(3)
-% defImg = uint8(zeros(rows, columns, numOfColorChannels));
-% for itr = 1:numOfColorChannels
-%     defImg(:,:,itr) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,itr)), X, Y, 'cubic'));
-% end
+defCoord_x = reshape(defCoord(:,1), rows, columns);
+% defCoord_x = flipud(defCoord_x);
+defCoord_y = reshape(defCoord(:,2), rows, columns);
+%defCoord_y = flipud(defCoord_y);
+
+defImg = uint8(zeros(rows, columns, numOfColorChannels));
+for itr = 1:numOfColorChannels
+    defImg(:,:,itr) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:, itr)), X, Y, 'cubic'));
+%     defImg(:,:,itr) = uint8(interp2(X, Y, double(originImg(:,:,itr)), defCoord_x, defCoord_y));
+end
 
 % No interpolation
 % defImg = zeros(size(reshapeImg));
@@ -27,6 +34,7 @@ reshapeImg = reshape(originImg, rows*columns, numOfColorChannels);
 %     if y >= rows,    y = rows;    end
 %     defImg((x-1) * rows + y, :) = reshapeImg(itr, :);
 % end
+% 
 % defImg = uint8(reshape(defImg, rows, columns, numOfColorChannels));
 
 end

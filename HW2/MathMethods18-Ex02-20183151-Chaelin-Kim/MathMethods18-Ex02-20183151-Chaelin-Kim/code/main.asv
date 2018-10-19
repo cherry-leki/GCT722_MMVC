@@ -2,6 +2,7 @@ clear;
 
 %% Initial Setting
 imgFilePath = '../materials/ginger.png';
+% imgFilePath = '../materials/Pooh.jpg';
 srcImg = imread(imgFilePath);
 % srcImg = imread('../materials/Pooh.jpg');
 
@@ -22,16 +23,21 @@ weightAlpha = 1.1;
 % targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
 %             [160, 266]; [147, 369]; [272, 369]];
 
+sourceCP = [[18,168]; [173,157]; [339, 160]; [129, 299]; [227, 294]; ...
+            [116, 390]; [263, 392]];
+targetCP = [[30, 250]; [173,157]; [341, 55]; [98, 299]; [188, 294]; ...
+            [116, 390]; [263, 392]];
+
 %% Show the original image
 % Select some input and output control points
-figure('units','pixels','pos',[100 100 ((columns * 4) + 30) ((rows * 2) + 30)])
+figure('units','pixels','pos',[100 100 ((columns * 4)) ((rows * 2))])
 subplot(2, 4, [1,5]);
 imshow(srcImg)
 title('Original Image')
 hold on;
-sourceCP = ginput;
+% sourceCP = ginput;
 plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
-targetCP = ginput(size(sourceCP, 1));
+% targetCP = ginput(size(sourceCP, 1));
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
@@ -130,8 +136,10 @@ hold off;
 
 % Save result images
 [~,srcImgName,~] = fileparts(imgFilePath);
-srcImgName = string(srcImgName + '.png');
-imwrite(affineImg, '../materials/resultImage/affine' + srcImgName);
-imwrite(affineImg_b, '../materials/resultImage/affineBack' + srcImgName);
-% imwrite(similarityImg, '../materials/resultImage/similarityVer.png');
-% imwrite(rigidImg, '../materials/resultImage/rigidVer.png');
+srcImgName = string(srcImgName) + '.png';
+imwrite(affineImg, ['../materials/resultImage/affine' srcImgName{1}]);
+imwrite(affineImg_b, ['../materials/resultImage/affineb' srcImgName{1}]);
+imwrite(similarityImg, ['../materials/resultImage/similarity' srcImgName{1}]);
+imwrite(similarityImg_b, ['../materials/resultImage/similarityb' srcImgName{1}]);
+imwrite(rigidImg, ['../materials/resultImage/rigid' srcImgName{1}]);
+imwrite(rigidImg_b, ['../materials/resultImage/rigidb' srcImgName{1}]);
