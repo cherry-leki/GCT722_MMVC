@@ -9,7 +9,7 @@ for itr=1:sourceCPLen
     dist_y = sourceCP(itr, 2) - v(:,2);
     weight(:, itr) = 1./ sqrt(dist_x.^2 + dist_y.^2).^(2 * alpha);
 end
-weight(weight==inf) = 1;    % for the case of sourceCP == v coordinates
+weight(weight==inf) = 1;    
 
 end
 

@@ -7,9 +7,7 @@ function [defImg] = makeDefImg( originImg, defCoord )
 % -> size: ((row * columns)x2)
 reshapeImg = reshape(originImg, rows*columns, numOfColorChannels);
 
-% Deform the image with interpolation
-% Use griddata to find the new values of the new transformed coordinates
-% Color channel: Red(1), Green(2), Blue(3)
+% Deform the image with interpolation using griddata
 defImg = uint8(zeros(rows, columns, numOfColorChannels));
 for itr = 1:numOfColorChannels
     defImg(:,:,itr) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,itr)), X, Y, 'cubic'));
@@ -25,7 +23,7 @@ end
 %     if y <= 0, y = 1; end
 %     if x >= columns, x = columns; end
 %     if y >= rows,    y = rows;    end
-%
+% 
 %     defImg((x-1) * rows + y, :) = reshapeImg(itr, :);
 % end
 % 
