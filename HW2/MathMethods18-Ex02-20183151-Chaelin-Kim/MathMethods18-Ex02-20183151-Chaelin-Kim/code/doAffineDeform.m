@@ -1,5 +1,4 @@
 function [ affineDef ] = doAffineDeform( weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat )
-%DOAFFINEDEFORM 이 함수의 요약 설명 위치
 % lv(x) = xM + T
 %   - M: Linear transformation
 %   - T: Translation

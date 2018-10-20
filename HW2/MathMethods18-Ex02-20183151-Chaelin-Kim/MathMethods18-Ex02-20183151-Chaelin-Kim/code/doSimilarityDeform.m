@@ -13,25 +13,25 @@ sourceCPLen = size(sourceCP,1);
 targetCPLen = size(targetCP,1);
 
 % Compute fs(v) = sum(qhat * (1/¥ìs * A)) + qstar
-% -> Precompute A = w * [phat; -phat_ortho] * [(v - pstar); -(v - pstar)_ortho]T
+% -> Precompute A = w * [phat; -phat_perp] * [(v - pstar); -(v - pstar)_perp]T
 
-% 1. Make [phat; -phat_ortho]
-%	Calculate phat_ortho
-phat_ortho = [-phat(:,2,:), phat(:,1,:)];
-%	Make [phat; -phat_ortho] matrix [(x, y); (y, -x)]
+% 1. Make [phat; -phat_perp]
+%	Calculate phat_perp
+phat_perp = [-phat(:,2,:), phat(:,1,:)];
+%	Make [phat; -phat_perp] matrix [(x, y); (y, -x)]
 phatMat = zeros(2, 2, vLen, sourceCPLen);
 for itr=1:vLen
-    phatMat(:,:,itr,:) = [phat(itr,:,:); -phat_ortho(itr,:,:)];
+    phatMat(:,:,itr,:) = [phat(itr,:,:); -phat_perp(itr,:,:)];
 end
 
-% 2. Make [(v - pstar); -(v - pstar)_ortho]
-%   Calculate v-pstar & (v-pstar)_ortho
+% 2. Make [(v - pstar); -(v - pstar)_perp]
+%   Calculate v-pstar & (v-pstar)_perp
 vSubpstar = v - pstar;
-vSubpstar_ortho = [-vSubpstar(:,2) vSubpstar(:,1)];
-%   Make [(v - pstar); -(v - pstar)_ortho] matrix 
+vSubpstar_perp = [-vSubpstar(:,2) vSubpstar(:,1)];
+%   Make [(v - pstar); -(v - pstar)_perp] matrix 
 vSubpstarMat = zeros(2, 2, vLen);
 for itr=1:vLen
-    vSubpstarMat(:,:,itr) = [vSubpstar(itr,:); -vSubpstar_ortho(itr,:)];
+    vSubpstarMat(:,:,itr) = [vSubpstar(itr,:); -vSubpstar_perp(itr,:)];
 end
 
 % 3. Calculate myu = sum(weight * phat * phatT)
@@ -65,11 +65,11 @@ end
 similarityDef = [sum(qhatinvmyuA(:,1,:), 3) + qstar(:,1), sum(qhatinvmyuA(:,2,:), 3) + qstar(:,2)];
 
 % % Backward Warping
-% qhat_ortho = [-qhat(:,2,:), qhat(:,1,:)];
+% qhat_perp = [-qhat(:,2,:), qhat(:,1,:)];
 % qhatTMat = zeros(2, 2, vLen, sourceCPLen);
 % for itr=1:sourceCPLen
 %     for itr2=1:vLen
-%         qhatTMat(:,:,itr2,itr) = [qhat(itr2,:,itr)', -qhat_ortho(itr2,:,itr)'];
+%         qhatTMat(:,:,itr2,itr) = [qhat(itr2,:,itr)', -qhat_perp(itr2,:,itr)'];
 %     end
 % end
 % 
