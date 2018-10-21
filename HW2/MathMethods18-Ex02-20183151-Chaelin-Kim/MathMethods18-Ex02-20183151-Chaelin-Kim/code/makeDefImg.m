@@ -7,27 +7,21 @@ function [defImg] = makeDefImg( originImg, defCoord )
 % -> size: ((row * columns)x2)
 reshapeImg = reshape(originImg, rows*columns, numOfColorChannels);
 
-% Deform the image with interpolation using griddata
-defImg = uint8(zeros(rows, columns, numOfColorChannels));
-for itr = 1:numOfColorChannels
-    defImg(:,:,itr) = uint8(griddata(defCoord(:,1), defCoord(:,2), double(reshapeImg(:,itr)), X, Y, 'cubic'));
+% No interpolation
+defImg = zeros(size(reshapeImg));
+for itr=1:size(reshapeImg,1)
+    x = round(defCoord(itr,1));
+    y = round(defCoord(itr,2));
+
+    if x <= 0, x = 1; end
+    if y <= 0, y = 1; end
+    if x >= columns, x = columns; end
+    if y >= rows,    y = rows;    end
+
+    defImg((x-1) * rows + y, :) = reshapeImg(itr, :);
 end
 
-% No interpolation
-% defImg = zeros(size(reshapeImg));
-% for itr=1:size(reshapeImg,1)
-%     x = round(defCoord(itr,1));
-%     y = round(defCoord(itr,2));
-%     
-%     if x <= 0, x = 1; end
-%     if y <= 0, y = 1; end
-%     if x >= columns, x = columns; end
-%     if y >= rows,    y = rows;    end
-% 
-%     defImg((x-1) * rows + y, :) = reshapeImg(itr, :);
-% end
-% 
-% defImg = uint8(reshape(defImg, rows, columns, numOfColorChannels));
+defImg = uint8(reshape(defImg, rows, columns, numOfColorChannels));
 
 end
 

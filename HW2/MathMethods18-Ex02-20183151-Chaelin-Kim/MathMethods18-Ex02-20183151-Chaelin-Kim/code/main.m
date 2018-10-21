@@ -2,6 +2,7 @@ clear;
 
 %% Initial Setting
 imgFilePath = '../materials/ginger.png';
+% imgFilePath = '../materials/Pooh.jpg';
 srcImg = imread(imgFilePath);
 
 [rows, columns, ~] = size(srcImg);
@@ -16,11 +17,12 @@ vLen = size(v,1);
 weightAlpha = 1.1;
 
 % % Example Control point
-sourceCP = [[166, 55]; [40, 157]; [175, 185]; [270, 157]; [335, 157]; ...
-            [181, 262]; [118, 369]; [252, 369]];
-targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
-            [160, 266]; [147, 369]; [272, 369]];
-
+% % Howework example
+% sourceCP = [[166, 55]; [40, 157]; [175, 185]; [270, 157]; [335, 157]; ...
+%             [181, 262]; [118, 369]; [252, 369]];
+% targetCP = [[166, 55]; [8, 268]; [175, 185]; [271, 111]; [338, 57]; ...
+%             [160, 266]; [147, 369]; [272, 369]];
+% % Paper example
 % sourceCP = [[18, 168]; [173, 157]; [339, 160]; [129, 280]; [227, 280]; ...
 %             [116, 390]; [263, 392]];
 % targetCP = [[30, 250]; [173, 157]; [341, 55]; [98, 280]; [188, 280]; ...
@@ -33,9 +35,9 @@ subplot(2, 4, [1,5]);
 imshow(srcImg)
 title('Original Image')
 hold on;
-% sourceCP = ginput;
+sourceCP = ginput;
 plot(sourceCP(:, 1), sourceCP(:, 2), 'o', 'Color', 'g')
-% targetCP = ginput(size(sourceCP, 1));
+targetCP = ginput(size(sourceCP, 1));
 plot(targetCP(:, 1), targetCP(:, 2), 'x', 'Color', 'r')
 hold off;
 
@@ -66,19 +68,19 @@ qhat_b = calHat(vLen, sourceCP, qstar_b);
 affineCoord = doAffineDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
 affineCoord_b = doAffineDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
 affineImg = makeDefImg(srcImg, affineCoord);
-affineImg_b = makeDefImgBack(srcImg, affineCoord_b);
+affineImg_b = makeDefImgBack(srcImg, affineCoord_b, 'T');
 
 %% Similarity Transformation
 similarityCoord = doSimilarityDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
 similarityCoord_b = doSimilarityDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
 similarityImg = makeDefImg(srcImg, similarityCoord);
-similarityImg_b = makeDefImgBack(srcImg, similarityCoord_b);
+similarityImg_b = makeDefImgBack(srcImg, similarityCoord_b, 'T');
 
 %% Rigid Transformation
 rigidCoord = doRigidDeform(weight, v, sourceCP, targetCP, pstar, phat, qstar, qhat);
 rigidCoord_b = doRigidDeform(weight_b, v, targetCP, sourceCP, pstar_b, phat_b, qstar_b, qhat_b);
 rigidImg = makeDefImg(srcImg, rigidCoord);
-rigidImg_b = makeDefImgBack(srcImg, rigidCoord_b);
+rigidImg_b = makeDefImgBack(srcImg, rigidCoord_b, 'T');
 
 %% Show result images
 % The result of affine transformation
