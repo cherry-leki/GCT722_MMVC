@@ -7,13 +7,14 @@ circleRad = srcData.CircleRadius;
 image = srcData.I;
 points = srcData.ListInputPoints;
 
-
+% Set the first lower bound and upper bound
 lowerBound = 0;
 upperBound = 200;
 lowerBoundList = lowerBound;
 upperBoundList = upperBound;
 
-% x = 1104, y = 549
+% Set the initial value to the list
+% w = 1104, h = 549 -> [1, 1104], [1, 549]
 spaceList = {lowerBound, upperBound, [1, size(image, 2)], [1, size(image, 1)]};
 finalSpace = [];
 
@@ -85,7 +86,7 @@ for itr=1:size(points, 1)
 end
 
 %% Show result image
-figure;
+% The image before the BNB
 subplot(2,2,1);
 imshow(image);
 title('\fontsize{16} \bf Before BnB');
@@ -93,6 +94,7 @@ hold on;
 plot(points(:, 1), points(:, 2), '.', 'Color', 'c', 'MarkerSize', 12);
 hold off;
 
+% The image after the BNB
 subplot(2,2,3);
 imshow(image);
 title('\fontsize{16} \bf After BnB');
@@ -102,6 +104,8 @@ plot(outliers(:,1), outliers(:,2), '.', 'Color', 'r', 'MarkerSize', 12);
 viscircles([finalSpace{3}(1), finalSpace{4}(1)], circleRad, 'Color', 'b');
 hold off;
 
+% The graph of evolution of the lower and upper bounds of the number of
+% inliers along the BNB iterations
 subplot(2,2,2);
 hold on;
 grid on;

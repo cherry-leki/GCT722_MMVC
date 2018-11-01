@@ -7,13 +7,14 @@ circleRad = srcData.CircleRadius;
 image = srcData.I;
 points = srcData.ListInputPoints;
 
-
+% Set the first lower bound and upper bound
 lowerBound = 0;
 upperBound = 200;
 lowerBoundList = lowerBound;
 upperBoundList = upperBound;
 
-% x = 1104, y = 549
+% Set the whole space to the list
+% w = 1104, h = 549 -> [1, 1104], [1, 549]
 spaceList = {lowerBound, upperBound, [1, size(image, 2)], [1, size(image, 1)]};
 finalSpace = [];
 
