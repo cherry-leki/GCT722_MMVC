@@ -19,7 +19,7 @@ else
     
     secondChildSpace = {[currentSpace{3}(1), currentSpace{3}(2)], [currentSpace{4}(1) + halfRangeY, currentSpace{4}(2)]};
     [scLowerBound, scUpperBound, ~, ~] = calBounds(secondChildSpace, circleRad, points);
-    secondChild = [scLowerBound, scUpperBound, secondChildSpace];
+% %   secondChild = [scLowerBound, scUpperBound, secondChildSpace];
 end
 
 end

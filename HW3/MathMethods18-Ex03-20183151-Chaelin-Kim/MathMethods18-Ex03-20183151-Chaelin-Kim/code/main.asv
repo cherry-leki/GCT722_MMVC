@@ -25,15 +25,35 @@ result = [];
 while getOut < 1
     currentSpace = spaceList(1,:);
 
+    % Split the space into two children and put them into the list
     [spaceList(end+1,:), spaceList(end+1,:)] = doBNB(currentSpace, circleRad, points);
 
     spaceList = spaceList(2:end,:);
     
-    spaceList = sortrows(spaceList, 2, 'descend');
+    % Find the best lower bound
     spaceList = sortrows(spaceList, 1, 'descend');
-
+    if spaceList{1, 1} > lowerBound
+        lowerBound = spaceList{1, 1};
+    end
+    
+    % Find the best upper bound
+    spaceList = sortrows(spaceList, 2, 'descend');
+    if spaceList{1, 2} < upperBound
+        upperBound = spaceList{1, 2};
+    end
+    
+    
+    if upperBound - lowerBound <= 1
+        getOut = 1;
+        result = spaceList(1, :);
+    end
+        
+    iteration = iteration + 1;
+    upperBoundList = [upperBoundList, upperBound];
+    lowerBoundList = [lowerBoundList, lowerBound]; 
+        
     for itr=1:size(spaceList, 1)
-        if spaceList{1, 1} > spaceList{itr, 2}
+        if lowerBound > spaceList{itr, 2}
             spaceList(itr, :) = [];
         end
         
@@ -41,25 +61,21 @@ while getOut < 1
             break;
         end
     end
-
-    iteration = iteration + 1;
-    upperBoundList = [upperBoundList, spaceList{1, 2}];
-    lowerBoundList = [lowerBoundList, spaceList{1, 1}];
     
-    if spaceList{1, 2} - spaceList{1, 1} < 1
-        getOut = 1;
-        result = spaceList(1, :);
-    end
 end
 
-disp(result(3:4));
 [~,~,lowerInliersIndex, upperInlierIndex] = calBounds(result(3:4), circleRad, points);
 
 inliers = [];
 outliers = [];
 step = 1;
 for itr=1:size(points, 1)
-    if points
+    if itr == lowerInliersIndex(step)
+        inliers = [inliers; points(itr, :)];
+        step = step + 1;
+    else
+        outliers = [outliers; points(itr, :)];
+    end
 end
 
 %% Show result image
@@ -70,16 +86,18 @@ hold on;
 plot(points(:, 1), points(:, 2), '.', 'Color', 'c', 'MarkerSize', 12);
 hold off;
 
-subplot(2, 2, 3);
+subplot(2, 2, 2);
 imshow(image);
 title('After BnB');
 hold on;
-plot(lowerInliersIndex(:,1), lowerInliersIndex(:,2), '.', 'MarkerSize', 12);
-viscircles([result{3}(1), result{4}(1)], circleRad);
+plot(inliers(:,1), inliers(:,2), '.', 'Color', 'g', 'MarkerSize', 12);
+plot(outliers(:,1), outliers(:,2), '.', 'Color', 'r', 'MarkerSize', 12);
+viscircles([result{3}(1), result{4}(1)], circleRad, 'Color', 'b');
 hold off;
 
-subplot(2, 2, [2,4]);
+subplot(2, 2, [3,4]);
 hold on;
 plot(upperBoundList, '-o');
 plot(lowerBoundList, '-o');
+title('Convergence of bounds');
 hold off;
