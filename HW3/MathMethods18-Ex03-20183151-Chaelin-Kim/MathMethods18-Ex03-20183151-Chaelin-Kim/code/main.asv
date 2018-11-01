@@ -52,18 +52,14 @@ while getOut < 1
     end
 end
 
+disp(result(3:4));
 [~,~,lowerInliersIndex, upperInlierIndex] = calBounds(result(3:4), circleRad, points);
 
 inliers = [];
 outliers = [];
 step = 1;
 for itr=1:size(points, 1)
-    if itr == lowerInliersIndex(step)
-        inliers = [inliers; points(itr, :)];
-        step = step + 1;
-    else
-        outliers = [outliers; points(itr, :)];
-    end
+    if points
 end
 
 %% Show result image
@@ -74,18 +70,16 @@ hold on;
 plot(points(:, 1), points(:, 2), '.', 'Color', 'c', 'MarkerSize', 12);
 hold off;
 
-subplot(2, 2, 2);
+subplot(2, 2, 3);
 imshow(image);
 title('After BnB');
 hold on;
-plot(inliers(:,1), inliers(:,2), '.', 'Color', 'g', 'MarkerSize', 12);
-plot(outliers(:,1), outliers(:,2), '.', 'Color', 'r', 'MarkerSize', 12);
-viscircles([result{3}(1), result{4}(1)], circleRad, 'Color', 'b');
+plot(lowerInliersIndex(:,1), lowerInliersIndex(:,2), '.', 'MarkerSize', 12);
+viscircles([result{3}(1), result{4}(1)], circleRad);
 hold off;
 
-subplot(2, 2, [3,4]);
+subplot(2, 2, [2,4]);
 hold on;
 plot(upperBoundList, '-o');
 plot(lowerBoundList, '-o');
-title('Convergence of bounds');
 hold off;
