@@ -1,27 +1,32 @@
 clear;
 
 %% Initial Setting
+% Load the data
 srcData = load('../data/InputData.mat');
 circleRad = srcData.CircleRadius;
 image = srcData.I;
 points = srcData.ListInputPoints;
 
-% x = 1104, y = 549
+
 lowerBound = 0;
 upperBound = 200;
 lowerBoundList = lowerBound;
 upperBoundList = upperBound;
 
+% x = 1104, y = 549
 spaceList = {lowerBound, upperBound, [1, size(image, 2)], [1, size(image, 1)]};
+finalSpace = [];
 
-getOut = 0;
-result = [];
+%% Branch and Bound
 while 1
+    % Take the best candidata in the list
     currentSpace = spaceList(1,:);
 
     % Split the space into two children and put them into the list
+    % The cardinality bounds are computed in doBNB function
     [spaceList(end+1,:), spaceList(end+1,:)] = doBNB(currentSpace, circleRad, points);
 
+    % Remove the best candidate from the list
     spaceList = spaceList(2:end,:);
     
     % Find the best lower bound
@@ -36,15 +41,22 @@ while 1
         upperBound = spaceList{1, 2};
     end
     
-    
+    % The iterations stop when the lower and upper bound are nearer than 1,
+    % because they will lead to the same number of inliers
     if upperBound - lowerBound <= 1
-        result = spaceList(1, :);
+        finalSpace = spaceList(1, :);
         break;
     end
-        
+    
+    % Put the upper and lower bounds into the upperBoundList and
+    % lowerBoundList for display.
     upperBoundList = [upperBoundList, upperBound];
     lowerBoundList = [lowerBoundList, lowerBound]; 
-        
+    
+    % Remove all the elements in the list with a "bad" bound
+    % Current "lowerBound" is the highest lower bound of the number of
+    % inliers obtained so far. If the upper cardinality bound of a space is
+    % less than "lowerBound", it can be removed.
     for itr=1:size(spaceList, 1)
         if lowerBound > spaceList{itr, 2}
             spaceList(itr, :) = [];
@@ -57,7 +69,8 @@ while 1
     
 end
 
-[~,~,lowerInliersIndex, upperInlierIndex] = calBounds(result(3:4), circleRad, points);
+%% Compute inliers points and outliers points for display.
+[~,~,lowerInliersIndex, upperInlierIndex] = calBounds(finalSpace(3:4), circleRad, points);
 
 inliers = [];
 outliers = [];
@@ -72,27 +85,33 @@ for itr=1:size(points, 1)
 end
 
 %% Show result image
-subplot(2, 4, [1,2]);
+% The image before the BNB
+subplot(2,2,1);
 imshow(image);
-title('Before BnB');
+title('\fontsize{16} \bf Before BnB');
 hold on;
 plot(points(:, 1), points(:, 2), '.', 'Color', 'c', 'MarkerSize', 12);
 hold off;
 
-subplot(2, 4, [3,4]);
+% The image after the BNB
+subplot(2,2,3);
 imshow(image);
-title('After BnB');
+title('\fontsize{16} \bf After BnB');
 hold on;
 plot(inliers(:,1), inliers(:,2), '.', 'Color', 'g', 'MarkerSize', 12);
 plot(outliers(:,1), outliers(:,2), '.', 'Color', 'r', 'MarkerSize', 12);
-viscircles([result{3}(1), result{4}(1)], circleRad, 'Color', 'b');
+viscircles([finalSpace{3}(1), finalSpace{4}(1)], circleRad, 'Color', 'b');
 hold off;
 
-subplot(2, 4, [6,7]);
+% The graph of evolution of the lower and upper bounds of the number of
+% inliers along the BNB iterations
+subplot(2,2,2);
 hold on;
-plot(upperBoundList, '-', 'Color', 'r');
-plot(upperBoundList, '.', 'Color', 'r','MarkerSize', 12);
-plot(lowerBoundList, '-', 'Color', 'b');
-plot(lowerBoundList, '.', 'Color', 'b','MarkerSize', 12);
-title('Convergence of bounds');
+grid on;
+plot(upperBoundList, '.-', 'Color', 'r', 'MarkerSize', 12);
+plot(lowerBoundList, '.-', 'Color', 'b', 'MarkerSize', 12);
+title('\fontsize{16} \bf Convergence of bounds');
+legend({'upper', 'lower'}, 'Location', 'southeast');
+xlabel('\fontsize{12} Iterations');
+ylabel('\fontsize{12} Upper and lower bounds');
 hold off;
