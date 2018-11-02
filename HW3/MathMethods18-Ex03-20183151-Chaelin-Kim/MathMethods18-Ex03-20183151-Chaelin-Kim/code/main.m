@@ -78,6 +78,7 @@ end
 
 inliers = [];
 outliers = [];
+outlierIndices = [];
 step = 1;
 for itr=1:size(points, 1)
     if itr == lowerInliersIndex(step)
@@ -85,6 +86,7 @@ for itr=1:size(points, 1)
         step = step + 1;
     else
         outliers = [outliers; points(itr, :)];
+        outlierIndices = [outlierIndices; itr];
     end
 end
 
