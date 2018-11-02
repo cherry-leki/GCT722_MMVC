@@ -7,7 +7,7 @@ underY = listValue{2}(1);
 upperX = listValue{1}(2);
 upperY = listValue{2}(2);
 
-% Initialize the list that contain the indexes of inlier points.
+% Initialize the list that contain the indices of inlier points.
 lowerInliers = [];
 upperInliers = [];
 
