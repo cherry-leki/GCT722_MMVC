@@ -59,10 +59,9 @@ while 1
     upperBoundList = [upperBoundList, upperBound];
     lowerBoundList = [lowerBoundList, lowerBound]; 
     
-    % Remove all the elements in the list with a "bad" bound
-    % Current "lowerBound" is the highest lower bound of the number of
-    % inliers obtained so far. If the upper cardinality bound of a space is
-    % less than "lowerBound", it can be removed.
+    % Remove all the elements in the list with a "bad" bound.
+    % Current "lowerBound" is the highest lower bound of the number of inliers obtained so far.
+    % If the upper cardinality bound of a space is less than "lowerBound", it can be removed.
     for itr=1:size(spaceList, 1)
         if lowerBound > spaceList{itr, 2}
             spaceList(itr, :) = [];
@@ -75,7 +74,7 @@ while 1
     
 end
 
-%% Compute inliers points and outliers points in the final antenna location for display.
+%% Compute inliers points and outliers points in the final antenna location
 [~,~,lowerInliersIndex, upperInlierIndex] = calBounds(finalSpace(3:4), circleRad, points);
 
 inliers = [];
