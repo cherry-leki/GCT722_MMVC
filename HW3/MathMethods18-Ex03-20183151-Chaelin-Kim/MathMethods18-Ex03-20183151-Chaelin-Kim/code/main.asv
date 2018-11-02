@@ -20,7 +20,7 @@ upperBoundList = upperBound;
 % w = 1104, h = 549 -> [1, 1104], [1, 549]
 spaceList = {lowerBound, upperBound, [1, size(image, 2)], [1, size(image, 1)]};
 
-% Initialize the antenna location maximizing the consensus set
+% Initialize final sp
 finalSpace = [];
 
 %% Branch and Bound
@@ -29,8 +29,8 @@ while 1
     currentSpace = spaceList(1,:);
 
     % Split the space into two children and put them into the list
-    % The cardinality bounds are computed in makeChilds function
-    [spaceList(end+1,:), spaceList(end+1,:)] = makeChilds(currentSpace, circleRad, points);
+    % The cardinality bounds are computed in doBNB function
+    [spaceList(end+1,:), spaceList(end+1,:)] = doBNB(currentSpace, circleRad, points);
 
     % Remove the best candidate from the list
     spaceList = spaceList(2:end,:);
@@ -75,7 +75,7 @@ while 1
     
 end
 
-%% Compute inliers points and outliers points in the final antenna location for display.
+%% Compute inliers points and outliers points for display.
 [~,~,lowerInliersIndex, upperInlierIndex] = calBounds(finalSpace(3:4), circleRad, points);
 
 inliers = [];

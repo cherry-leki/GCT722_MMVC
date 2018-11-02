@@ -34,7 +34,7 @@ for i=1:size(points, 1)
        points(i, 2) >= (underY - circleRad) && points(i, 2) <= (upperY + circleRad)
 
         % Except the point that is not in the range of four circles that
-        % the center is the edge of original current space
+        % radius is the edge of original current space
         % left upper circle
         if points(i, 1) >= (underX - circleRad) && points(i, 1) <= underX && ...
            points(i, 2) >= (underY - circleRad) && points(i, 2) <= underY
@@ -70,7 +70,7 @@ for i=1:size(points, 1)
     end
 end
 
-% Compute the number of inliers (cardinality)
+% Compute the cardinality bounds
 lowerBound = size(lowerInliers,1);
 upperBound = size(upperInliers,1);
 
