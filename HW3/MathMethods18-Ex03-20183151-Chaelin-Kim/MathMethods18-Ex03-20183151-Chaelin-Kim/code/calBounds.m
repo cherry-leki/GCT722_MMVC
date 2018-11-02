@@ -1,5 +1,5 @@
 function [ lowerBound, upperBound, lowerInliers, upperInliers ] = calBounds( listValue, circleRad, points )
-% CALBOUNDS: compute cardinality bounds
+% calBounds: compute cardinality bounds
 
 % Set the lower and upper range of model.
 underX = listValue{1}(1);
