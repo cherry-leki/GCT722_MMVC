@@ -46,14 +46,7 @@ while 1
     if spaceList{1, 2} < upperBound
         upperBound = spaceList{1, 2};
     end
-    
-    % The iterations stop when the lower and upper bound are nearer than 1,
-    % because they will lead to the same number of inliers
-    if upperBound - lowerBound <= 1
-        finalSpace = spaceList(1, :);
-        break;
-    end
-    
+        
     % Put the upper and lower bounds into the upperBoundList and
     % lowerBoundList for display.
     upperBoundList = [upperBoundList, upperBound];
@@ -61,7 +54,7 @@ while 1
     
     % Remove all the elements in the list with a "bad" bound.
     % Current "lowerBound" is the highest lower bound of the number of inliers obtained so far.
-    % If the upper cardinality bound of a space is less than "lowerBound", it can be removed.
+    % If the upper bound of a space is less than "lowerBound", it can be removed.
     for itr=1:size(spaceList, 1)
         if lowerBound > spaceList{itr, 2}
             spaceList(itr, :) = [];
@@ -72,6 +65,12 @@ while 1
         end
     end
     
+    % The iterations stop when the lower and upper bound are nearer than 1,
+    % because they will lead to the same number of inliers
+    if upperBound - lowerBound <= 1
+        finalSpace = spaceList(1, :);
+        break;
+    end
 end
 
 %% Compute inliers points and outliers points in the final antenna location
