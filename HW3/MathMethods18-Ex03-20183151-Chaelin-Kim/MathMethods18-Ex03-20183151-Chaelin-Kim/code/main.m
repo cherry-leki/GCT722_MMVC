@@ -68,7 +68,7 @@ while 1
     % The iterations stop when the lower and upper bound are nearer than 1,
     % because they will lead to the same number of inliers
     if (spaceList{1, 2} == upperBound && spaceList{1, 1} == lowerBound) && ...
-        (spaceList{1, 2} - spaceList{1, 1} <= 1)
+        (spaceList{1, 2} - spaceList{1, 1} < 1)
         finalSpace = spaceList(1, :);
         break;
     end
