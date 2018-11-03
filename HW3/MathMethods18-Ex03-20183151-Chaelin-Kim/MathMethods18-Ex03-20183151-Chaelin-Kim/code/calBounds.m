@@ -38,28 +38,28 @@ for i=1:size(points, 1)
         % left upper circle
         if points(i, 1) >= (underX - circleRad) && points(i, 1) <= underX && ...
            points(i, 2) >= (underY - circleRad) && points(i, 2) <= underY
-            if (points(i, 1) - underX)^2 + (points(i, 2) - underY)^2 >= circleRad^2
+            if (points(i, 1) - underX)^2 + (points(i, 2) - underY)^2 > circleRad^2
                 continue;
             end
         end
         % right upper circle
         if points(i, 1) >= upperX               && points(i, 1) <= (upperX + circleRad) && ...
            points(i, 2) >= (underY - circleRad) && points(i, 2) <= underY
-            if (points(i, 1) - upperX)^2 + (points(i, 2) - underY)^2 >= circleRad^2
+            if (points(i, 1) - upperX)^2 + (points(i, 2) - underY)^2 > circleRad^2
                 continue;
             end
         end
         % left lower circle
         if points(i, 1) >= (underX - circleRad) && points(i, 1) <= underX && ...
-           points(i, 2) >= upperY               && points(i, 2) <= (underY + circleRad)
-            if (points(i, 1) - underX)^2 + (points(i, 2) - upperY)^2 >= circleRad^2
+           points(i, 2) >= upperY               && points(i, 2) <= (upperY + circleRad)
+            if (points(i, 1) - underX)^2 + (points(i, 2) - upperY)^2 > circleRad^2
                 continue;
             end
         end
         % right lower circle
         if points(i, 1) >= upperX               && points(i, 1) <= (upperX + circleRad) && ...
-           points(i, 2) >= upperY               && points(i, 2) <= (underY + circleRad)
-            if (points(i, 1) - upperX)^2 + (points(i, 2) - upperY)^2 >= circleRad^2
+           points(i, 2) >= upperY               && points(i, 2) <= (upperY + circleRad)
+            if (points(i, 1) - upperX)^2 + (points(i, 2) - upperY)^2 > circleRad^2
                 continue;
             end
         end
