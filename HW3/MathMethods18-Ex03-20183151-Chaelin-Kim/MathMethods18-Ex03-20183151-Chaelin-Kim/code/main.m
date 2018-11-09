@@ -57,13 +57,14 @@ while 1
     % Current "lowerBound" is the highest lower bound of the number of inliers obtained so far.
     % If the upper bound of a space is less than "lowerBound", it can be removed.
     for itr=1:size(spaceList, 1)
-        if lowerBound > spaceList{itr, 2}
-            spaceList(itr, :) = [];
-        end
-        
         if itr >= size(spaceList, 1)
             break;
         end
+        
+        if lowerBound > spaceList{itr, 2}
+            spaceList(itr, :) = [];
+            itr = itr - 1;
+        end        
     end
     
     % The iterations stop when the lower and upper bound are nearer than 1,
