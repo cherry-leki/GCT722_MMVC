@@ -14,4 +14,15 @@ function hist = getColorHistogram(I,seed, histRes)
 
 hist = zeros(histRes,histRes,histRes); % initialize for R,G,B
 
-% TODO
+% % TODO
+
+seed_r = I(seed(:,1), seed(:,2), 1);
+seed_g = I(seed(:,1), seed(:,2), 2);
+seed_b = I(seed(:,1), seed(:,2), 3);
+
+numColorValue = 256;
+step = numColorValue / histRes;
+
+for i = 1:histRes
+    
+end
