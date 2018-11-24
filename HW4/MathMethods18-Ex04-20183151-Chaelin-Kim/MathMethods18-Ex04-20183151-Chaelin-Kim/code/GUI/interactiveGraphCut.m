@@ -361,7 +361,7 @@ nPix = h*w;
 % I = imgaussfilt(I,2);
 
 % TASK 2.1
-histRes = 10;
+histRes = 32;
 cost_fg = getColorHistogram(I,seed_fg, histRes); % complete getColorHistogram.m
 cost_bg = getColorHistogram(I,seed_bg, histRes);
 
