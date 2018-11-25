@@ -51,8 +51,8 @@ for i=1:N
         unaries(idx_bg,1) = 0;
         unaries(idx_bg,2) = inf;
     else
-        unaries(i, 1) = hist_fg(rgbIntens(i,1), rgbIntens(i,2), rgbIntens(i,3)) * 2;
-        unaries(i, 2) = hist_bg(rgbIntens(i,1), rgbIntens(i,2), rgbIntens(i,3)) * 2;
+        unaries(i, 1) = hist_fg(rgbIntens(i,1), rgbIntens(i,2), rgbIntens(i,3));
+        unaries(i, 2) = hist_bg(rgbIntens(i,1), rgbIntens(i,2), rgbIntens(i,3));
     end
 end
 

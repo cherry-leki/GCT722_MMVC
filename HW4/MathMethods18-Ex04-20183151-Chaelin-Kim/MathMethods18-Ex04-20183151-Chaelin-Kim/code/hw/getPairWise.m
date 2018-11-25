@@ -22,16 +22,16 @@ B = zeros(rows * cols, 1);
 count = 1;
 for j=1:cols
     for i=1:rows
-        p = (i - 1) * rows + j;
+        p = (j - 1) * rows + i;
         % right
         if j ~= cols
-            q = (i - 1) * rows + (j + 1);
+            q = j * rows + i;
+            % Compute I_p and I_q
             I_p = I(i, j, :);
             I_q = I(i, j+1, :);
-            I_p = [(I_p(1) - 1) * rows + I_p(2), I_p(3)];
-            I_q = [(I_q(1) - 1) * rows + I_q(2), I_q(3)];
+            % Compute exp
             diff_pq = double(I_p) - double(I_q);
-            comp_exp = exp(- (diff_pq^2)./(2 * sigma^2));
+            comp_exp = exp(- (diff_pq.^2)./(2 * sigma^2));
             dist = 1;
             % input values
             pVector(count) = p;
@@ -41,15 +41,13 @@ for j=1:cols
         end
         % down
         if i ~= rows
-            q = i * rows + j;
+            q = (j-1) * rows + (i+1);
             % Compute I_p and I_q
             I_p = I(i, j, :);
             I_q = I(i+1, j, :);
-            I_p = [(I_p(1) - 1) * rows + I_p(2), I_p(3)];
-            I_q = [(I_q(1) - 1) * rows + I_q(2), I_q(3)];
             % Compute exp
             diff_pq = double(I_p) - double(I_q);
-            comp_exp = exp(- (diff_pq^2)./(2 * sigma^2));
+            comp_exp = exp(- (diff_pq.^2)./(2 * sigma^2));
             dist = 1;
             % input values
             pVector(count) = p;
@@ -61,6 +59,5 @@ for j=1:cols
 end
 
 pairWise = sparse(pVector',qVector',B',rows*cols,rows*cols);
-
 
 
