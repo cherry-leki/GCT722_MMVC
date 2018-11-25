@@ -20,6 +20,7 @@ rows = size(I, 1);
 cols = size(I, 2);
 N = rows * cols;
 
+% Get the rgb data from image
 img_rgb = zeros(N, 3);
 for j=1:cols
     for i=1:rows
@@ -27,6 +28,7 @@ for j=1:cols
     end
 end
 
+% Resolution of 32
 histRes = 32;
 numColorValue = 256;
 step = numColorValue / histRes;
@@ -41,8 +43,10 @@ step = numColorValue / histRes;
 %     rgbIntens(index_b,3) = i;
 % end
 
+% Create the unaries
 unaries = zeros(N, 2);
 
+% Compute unknown unary values
 for j=1:cols
     for i=1:rows
         index = (j - 1) * rows + i;
@@ -51,19 +55,26 @@ for j=1:cols
         r = fix(img_rgb(index, 1) / step) + 1;
         g = fix(img_rgb(index, 2) / step) + 1;
         b = fix(img_rgb(index, 3) / step) + 1;
+        % Pr(I|label)
         hist_fgValue = hist_fg(r, g, b);
         hist_bgValue = hist_bg(r, g, b);
-        unaries(index, 1) = lambda * (-log(hist_fgValue + 10^(-10)));
-        unaries(index, 2) = lambda * (-log(hist_bgValue + 10^(-10)));
+        % add small value for logarithm
+        us = 10^(-10);
+        % unary = lambda * -log(Pr(I|label))
+        unaries(index, 1) = lambda * (-log(hist_fgValue + us));
+        unaries(index, 2) = lambda * (-log(hist_bgValue + us));
     end
 end
 
+% Set the unary from seed foreground data
+% K = inf
 for i=1:size(seed_fg,1)
     index = (seed_fg(:,1) - 1).* rows + seed_fg(:,2);
     unaries(index, 1) = 0;
     unaries(index, 2) = inf;
 end
 
+% Set the unary from seed background data
 for i=1:size(seed_bg,1)
     index = (seed_bg(:,1) - 1).* rows + seed_bg(:,2);
     unaries(index,1) = inf;

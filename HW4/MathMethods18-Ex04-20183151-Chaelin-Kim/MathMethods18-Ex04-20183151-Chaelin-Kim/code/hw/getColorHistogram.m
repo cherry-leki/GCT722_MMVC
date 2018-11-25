@@ -15,10 +15,13 @@ function hist = getColorHistogram(I,seed, histRes)
 hist = zeros(histRes,histRes,histRes); % initialize for R,G,B
 
 % % TODO
+% Resolution of 32 for the color histogram
 numColorValue = 256;
 step = numColorValue / histRes;
 seed_rgb = zeros(size(seed,1), 3);
+% Create the histogram
 for i=1:size(seed,1)
+    % Get the rgb data of seed from image
     seed_rgb(i,:) = I(seed(i,2), seed(i,1), :);
     
     r = fix(seed_rgb(i,1) / step) + 1;

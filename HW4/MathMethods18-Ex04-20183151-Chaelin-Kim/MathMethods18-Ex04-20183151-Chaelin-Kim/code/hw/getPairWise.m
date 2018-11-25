@@ -16,10 +16,13 @@ function pairWise = getPairWise(I)
 rows = size(I, 1);
 cols = size(I, 2);
 sigma = 5;
-pVector = zeros(rows * cols, 1);
-qVector = zeros(rows * cols, 1);
+
+pVector = zeros(rows * cols, 1);    % i index
+qVector = zeros(rows * cols, 1);    % j index
+% B = exp(-(Ip - Iq)^2 / (2*¥ò^2)) / dist(Ip, Iq)
 B = zeros(rows * cols, 1);
 count = 1;
+
 for j=1:cols
     for i=1:rows
         p = (j - 1) * rows + i;
