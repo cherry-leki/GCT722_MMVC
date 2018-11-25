@@ -370,9 +370,9 @@ lam = handles.lambda;
 
 % Set the unaries and the pairwise terms
 % TASK 2.2-2.3
-unaries = getUnaries(I, lam,cost_fg,cost_bg, seed_fg, seed_bg); % complete getUnaries.m
+unaries = getUnaries(I, lam, cost_fg, cost_bg, seed_fg, seed_bg); % complete getUnaries.m
 pairwise = getPairWise(I); % complete getPairWise.m
-
+disp("End!");
 %% Graph Cut
 % TASK 2.4
 %  Your code here
