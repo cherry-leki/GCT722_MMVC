@@ -27,37 +27,46 @@ for j=1:cols
         if j ~= cols
             q = j * rows + i;
             % Compute I_p and I_q
-            I_p = I(i, j, :);
-            I_q = I(i, j+1, :);
+            I_p = zeros(1,3);
+            I_q = zeros(1,3);
+            for k=1:3
+                I_p(1,k) = I(i,j,k);
+                I_q(1,k) = I(i,j+1,k);
+            end
             % Compute exp
             diff_pq = double(I_p) - double(I_q);
-            comp_exp = exp(- (diff_pq.^2)./(2 * sigma^2));
+            comp_exp = exp(- norm(diff_pq)./(2 * sigma^2));
             dist = 1;
             % input values
             pVector(count) = p;
             qVector(count) = q;
-            B(count) = sum(comp_exp) / dist;
+            B(count) = comp_exp / dist;
             count = count + 1;
         end
         % down
         if i ~= rows
             q = (j-1) * rows + (i+1);
             % Compute I_p and I_q
-            I_p = I(i, j, :);
-            I_q = I(i+1, j, :);
+            I_p = zeros(1,3);
+            I_q = zeros(1,3);
+            for k=1:3
+                I_p(1,k) = I(i,j,k);
+                I_q(1,k) = I(i+1,j,k);
+            end
             % Compute exp
             diff_pq = double(I_p) - double(I_q);
-            comp_exp = exp(- (diff_pq.^2)./(2 * sigma^2));
+            comp_exp = exp(- norm(diff_pq)./(2 * sigma^2));
             dist = 1;
             % input values
             pVector(count) = p;
             qVector(count) = q;
-            B(count) = sum(comp_exp) / dist;
+            B(count) = comp_exp / dist;
             count = count + 1;
         end
     end
 end
 
 pairWise = sparse(pVector',qVector',B',rows*cols,rows*cols);
+return;
 
 

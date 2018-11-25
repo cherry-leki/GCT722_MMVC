@@ -18,6 +18,8 @@ hist = zeros(histRes,histRes,histRes); % initialize for R,G,B
 seed_rgb = zeros(size(seed,1), 3);
 for i=1:size(seed,1)
     seed_rgb(i,:) = I(seed(i,2), seed(i,1), :);
+    
+    seed
 end
 
 numColorValue = 256;
@@ -40,20 +42,11 @@ for r=1:histRes
     end
 end
 
-pr_Seed = size(seed, 1) / (size(I, 1) * size(I, 2));
-pr_IpSeed 
-hist = ()
-
 % Smooth the histogram
-hist = smooth3(hist,'gaussian',7);
+hist = smooth3(hist,'gaussian',7,std(hist(:)));
 
 % Normalize the histogram
-histSum = sum(sum(sum(hist)));
+histSum = sum(hist(:));
 hist = hist./histSum;
 
-% Fill empty entries
-hist(hist == 0) = 10^(-10);
-
-% Applyting the logarithm to the histogram
-hist = -log(hist);
-
+return
