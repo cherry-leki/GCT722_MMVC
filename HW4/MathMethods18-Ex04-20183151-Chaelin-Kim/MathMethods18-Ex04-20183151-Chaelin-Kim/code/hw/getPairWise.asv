@@ -31,30 +31,28 @@ for j=1:cols
             I_p = [(I_p(1) - 1) * rows + I_p(2), I_p(3)];
             I_q = [(I_q(1) - 1) * rows + I_q(2), I_q(3)];
             diff_pq = double(I_p) - double(I_q);
-            comp_exp = exp(- (diff_pq^2)./(2 * sigma^2));
+            exp_value = exp(- norm(diff_pq)^4./(2 * sigma^2));
             dist = 1;
-            % input values
+            comB = exp_value / dist;
             pVector(count) = p;
             qVector(count) = q;
-            B(count) = sum(comp_exp) / dist;
+            B(count) = comB;
             count = count + 1;
         end
         % down
         if i ~= rows
             q = i * rows + j;
-            % Compute I_p and I_q
             I_p = I(i, j, :);
             I_q = I(i+1, j, :);
             I_p = [(I_p(1) - 1) * rows + I_p(2), I_p(3)];
             I_q = [(I_q(1) - 1) * rows + I_q(2), I_q(3)];
-            % Compute exp
             diff_pq = double(I_p) - double(I_q);
-            comp_exp = exp(- (diff_pq^2)./(2 * sigma^2));
+            exp_value = exp(- norm(diff_pq)^4./(2 * sigma^2));
             dist = 1;
-            % input values
+            comB = sum(exp_value) / dist;
             pVector(count) = p;
             qVector(count) = q;
-            B(count) = sum(comp_exp) / dist;
+            B(count) = comB;
             count = count + 1;
         end
     end

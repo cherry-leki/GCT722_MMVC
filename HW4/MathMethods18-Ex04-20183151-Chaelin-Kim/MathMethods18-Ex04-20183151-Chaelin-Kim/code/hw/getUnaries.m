@@ -41,24 +41,26 @@ end
 
 unaries = zeros(N, 2);
 idx_fg = (seed_fg(:,1) - 1).* row + seed_fg(:,2);
-% idx_bg = (seed_bg(:,1) - 1).* row + seed_bg(:,2);
-unaries(idx_fg,1) = 0;
-unaries(idx_fg,2) = inf;
-% unaries(idx_bg,1) = inf;
-% unaries(idx_bg,2) = 0;
+idx_bg = (seed_bg(:,1) - 1).* row + seed_bg(:,2);
 
 for i=1:N
     if find(idx_fg == i)
-        unaries(idx_fg,1) = 0;
-        unaries(idx_fg,2) = inf;
-%     elseif find(idx_bg == i)
-%         unaries(idx_bg,1) = inf;
-%         unaries(idx_bg,2) = 0;
+        unaries(idx_fg,1) = inf;
+        unaries(idx_fg,2) = 0;
+    elseif find(idx_bg == i)
+        unaries(idx_bg,1) = 0;
+        unaries(idx_bg,2) = inf;
     else
-%         unaries(i, 1) = hist_bg(rgbIntens(i,1), rgbIntens(i,2), rgbIntens(i,3));
-        unaries(i, 2) = hist_fg(rgbIntens(i,1), rgbIntens(i,2), rgbIntens(i,3));
+        unaries(i, 1) = hist_fg(rgbIntens(i,1), rgbIntens(i,2), rgbIntens(i,3));
+        unaries(i, 2) = hist_bg(rgbIntens(i,1), rgbIntens(i,2), rgbIntens(i,3));
     end
 end
+
+% Fill empty entries
+unaries(unaries == 0) = 10^(-10);
+
+% Applyting the logarithm
+unaries = -log(unaries);
 
 unaries = lambda.*unaries;
 
